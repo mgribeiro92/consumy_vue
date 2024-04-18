@@ -1,73 +1,86 @@
-import { storage } from './storage'
-import { BASE_URL} from './plugins/fetch'
+import { createStorage, type SimpleStorage } from './storage'
 
-function success(response: Response, onSuccess: () => void) {
-	response.json().then((json) => {
-		storage.store('token', json.token)
-		storage.store('email', json.email)		
-		onSuccess()
-	})
-}
+class Auth {
+	private storage: SimpleStorage
 
-function failure(response: Response, onFailure: () => void) {
-	response.json().then((json) => {
-		console.log(json)
-	})
-	onFailure()
-}
-
-function isLoggedIn() {
-	return Boolean(storage.get('token'))
-}
-
-function signOut(andThen = () => {}) {
-	storage.remove('token')
-	storage.remove('email')
-	
-	andThen()
-}
-
-function currentUser() {
-	if(!isLoggedIn()) {
-		return null
+	constructor(persistent = false) {
+		this.storage = createStorage(persistent)
 	}
-	return {		
-		email: storage.get('email')
-	}
-}
 
-async function signIn(email: string, password: string, onSuccess: () => void, onFailure: () => void) {
-	console.log("will sign in...")
-	const body = {
-		login: {
-			email: email,
-			password: password,
-			app_vue: "buyer"
+
+	private getFallback(key: string) : string | null {
+		let transient = createStorage(false)
+		let persistent = createStorage(true)
+
+		return transient.get(key) || persistent.get(key)
+	}
+
+	success(response: Response, onSuccess: () => void) {
+		response.json().then((json) => {
+			this.storage.store('token', json.token)
+			this.storage.store('email', json.email)		
+			onSuccess()
+		})
+	}
+
+	failure(response: Response, onFailure: () => void) {
+		onFailure()
+	}
+
+	currentUser() {
+		if(!this.isLoggedIn()) {
+			return null
+		}
+
+		return {
+			email: this.getFallback('email')
 		}
 	}
-	const response = await fetch (
-		import.meta.env.VITE_BASE_URL + '/sign_in', {
-		method: "POST",
-		headers: {
-			"Accept": "application/json",
-			"Content-Type": "application/json"
-		},
-		body: JSON.stringify(body)
-	})	
-	.then((response) => {
-		if(response.ok) {
-			success(response, onSuccess)
+
+	isLoggedIn() {
+		return Boolean(this.getFallback('token'))
+	}
+
+	signOut(andThen = () => {}) {
+		let transient = createStorage(false)
+		let persistent = createStorage(true)
+
+		transient.remove('token')
+		transient.remove('email')
+		persistent.remove('token')
+		persistent.remove('email')
+
+		andThen()
+	}
+
+
+	async signIn(email: string, password: string, onSuccess: () => void, onFailure: () => void) {
+		console.log("will sign in...")
+		const body = {
+			login: {
+				email: email,
+				password: password,
+				app_vue: "buyer"
+			}
 		}
-		else {
-			failure(response, onFailure)
-		}
-	})
+		const response = await fetch (
+			import.meta.env.VITE_BASE_URL + '/sign_in', {
+			method: "POST",
+			headers: {
+				"Accept": "application/json",
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify(body)
+		})	
+		.then((response) => {
+			if(response.ok) {
+				this.success(response, onSuccess)
+			}
+			else {
+				this.failure(response, onFailure)
+			}
+		})
+	}
 }
 
-export const auth = {
-	signIn,
-	isLoggedIn,
-	currentUser,
-	signOut
-}
-
+export {Auth}

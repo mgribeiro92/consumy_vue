@@ -3,12 +3,15 @@
 import { onMounted, onUnmounted } from 'vue';
 import router from '@/router';
 import { ref } from 'vue';
-import { auth } from '../auth'
+import { Auth } from '../auth'
 import Message from './Message.vue'
 import eventBus from '@/event';
 
+const auth = new Auth()
+
 const email = defineModel<string>('email')
 const password =  defineModel<string>('password')
+const remember = defineModel<boolean>('remember', {default: true})
 const awaiting = ref(false)
 
 const msg = ref('')
@@ -64,7 +67,7 @@ function onSubmit() {
 				</div>            
 				<input v-show="!awaiting" type="submit" class="btn-login" value="Login"></input>
 				<div class="form-group form-check">
-					<input type="checkbox" class="form-check-input">
+					<input type="checkbox" class="form-check-input" v-model="remember">
 					<label class="form-check-label">Remember me</label>
 				</div>				 				           
 			</form>

@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { auth } from '@/auth'
+import { Auth } from '@/auth'
 import { ref, onMounted } from 'vue'
 import NavBar from '@/components/NavBar.vue';
 
+const auth = new Auth()
 const currentUser = ref(auth.currentUser())
 const isLoggedIn = ref(auth.isLoggedIn())
 

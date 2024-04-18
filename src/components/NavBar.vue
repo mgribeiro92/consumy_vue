@@ -2,9 +2,10 @@
 
 import router from '@/router';
 import eventBus from '@/event';
-import { auth } from '../auth'
+import { Auth } from '../auth'
 import { ref, onMounted } from 'vue'
 
+const auth = new Auth()
 const currentUser = ref(auth.currentUser())
 
 const logOut = function() {
