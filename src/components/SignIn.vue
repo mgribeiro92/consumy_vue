@@ -2,13 +2,14 @@
 
 import { onMounted, onUnmounted } from 'vue';
 import router from '@/router';
+import { useRouter } from 'vue-router'
 import { ref } from 'vue';
 import { Auth } from '../auth'
 import Message from './Message.vue'
-import eventBus from '@/event';
+import event from '@/event';
 
+// const router = useRouter()
 const auth = new Auth()
-
 const email = defineModel<string>('email')
 const password =  defineModel<string>('password')
 const remember = defineModel<boolean>('remember', {default: true})
@@ -18,8 +19,8 @@ const msg = ref('')
 const alert = ref('')
 
 onMounted(() => {
-	console.log('log do created do sign_in')
-	eventBus.on("sign_in", (dados: any) => {
+	console.log('mounted sign in')	
+	event.on("sign_in", (dados: any) => {
 		console.log(dados)
 		msg.value = dados.msg
 		alert.value = dados.alert
@@ -28,14 +29,16 @@ onMounted(() => {
 })
 
 function onSubmit() {
+	let auth = new Auth(remember.value)
   awaiting.value = true
   auth.signIn(email.value || '', password.value || '', () => {
 		awaiting.value = false
-		console.log('fez login')				
-		router.push('/')			
+		console.log('fez login')	
+		// window.location.reload()
+		router.push('/')
     }, 
 		() => {
-			awaiting.value = false
+			awaiting.value = false			
 			console.log('nao foi dessa vez')
 			msg.value = "Email or password incorrect!"
 			alert.value = "error"																
@@ -89,7 +92,7 @@ function onSubmit() {
 	}
 
 	.login {
-		width: 500px;    
+		width: 400px;    
     opacity: 1.0;
     border-radius: 20px;
     background-color: white;    
@@ -101,6 +104,8 @@ function onSubmit() {
 	.form-login {
 		margin-bottom: 20px;
 	}
+
+	
 
 	h3 {
 		color: #fa9901

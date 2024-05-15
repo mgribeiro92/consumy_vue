@@ -21,6 +21,7 @@ const dados = {
 }
 
 function submit() {
+  console.log('botao chamado')
   router.push('/sign_in')
   setTimeout(() => {
     eventBus.emit("sign_in", dados);  

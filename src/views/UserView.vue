@@ -1,43 +1,27 @@
-<script>
+<script setup lang="ts">
 
-import axios from 'axios';
-const token = localStorage.getItem('token')
+import { Auth } from '@/auth'
+import { User  } from '@/user'
+import { createStorage, type SimpleStorage } from '@/storage'
+import { onMounted } from 'vue';
 
-const config = {
-  headers: {
-    'Authorization': 'Bearer ' + token,
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-  }
-};
+const auth = new Auth()
+const user = new User()
 
-export default { 
-  data() {
-    return {
-      user: {},
-    }
-  },
-  created() {
-    axios.get('/me', config)
-      .then(response => {
-        this.user = response.data;
-        console.log(this.user)
-      })
-    .catch(error => {
-      console.error('Erro ao buscar dados da API:', error);
-    });
-  },
-}
+onMounted(() => {
+	const resposta = user.userProfile()
+	console.log(resposta)
+})
 
 </script>
 
 
 <template>
-  {{ currentUser }}
+  <!-- {{ currentUser }}
     <div class="card-user">
 			<p><strong>Email:</strong> {{user.email}} </p>
 			<p><strong>Id:</strong> {{user.id}} </p>
-    </div>
+    </div> -->
     
 </template>
 

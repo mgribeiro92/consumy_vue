@@ -11,17 +11,8 @@ const currentUser = ref(auth.currentUser())
 const logOut = function() {
   console.log('logout chamado')
   auth.signOut()
-  router.push('/')
+  window.location.reload()
 }
-
-// onMounted(() => {
-// 	console.log('log do created')
-// 	eventBus.on("sign_in", dados => {
-//     console.log(dados)
-//     console.log('log dos dados recebidos')
-//   })  
-// })
-
 </script>
 
 <template> 
@@ -39,7 +30,7 @@ const logOut = function() {
       </ul>        
       <ul class="d-flex navbar-nav">
         <li class="nav-item">
-          <RouterLink to="/user" class="nav-link">{{ currentUser && currentUser.email }}</RouterLink>
+          <RouterLink to="/user" class="nav-link">Hi, {{ currentUser && currentUser.email }}!</RouterLink>
         </li>				        
         <li class="nav-item">
           <button @click="logOut()" class="nav-link">Log out</button>

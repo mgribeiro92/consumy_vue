@@ -7,7 +7,6 @@ class Auth {
 		this.storage = createStorage(persistent)
 	}
 
-
 	private getFallback(key: string) : string | null {
 		let transient = createStorage(false)
 		let persistent = createStorage(true)
@@ -24,7 +23,7 @@ class Auth {
 	}
 
 	failure(response: Response, onFailure: () => void) {
-		onFailure()
+		onFailure()				
 	}
 
 	currentUser() {
@@ -53,14 +52,12 @@ class Auth {
 		andThen()
 	}
 
-
 	async signIn(email: string, password: string, onSuccess: () => void, onFailure: () => void) {
 		console.log("will sign in...")
 		const body = {
 			login: {
 				email: email,
 				password: password,
-				app_vue: "buyer"
 			}
 		}
 		const response = await fetch (
@@ -68,7 +65,8 @@ class Auth {
 			method: "POST",
 			headers: {
 				"Accept": "application/json",
-				"Content-Type": "application/json"
+				"Content-Type": "application/json",
+				"X-API-KEY": "8MlfP2mtJVVnICGCJBQ2IeBvSbo="
 			},
 			body: JSON.stringify(body)
 		})	

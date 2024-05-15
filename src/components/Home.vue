@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Auth } from '@/auth'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUpdated } from 'vue'
 import NavBar from '@/components/NavBar.vue';
 
 const auth = new Auth()

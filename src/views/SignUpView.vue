@@ -2,10 +2,11 @@
 
 import router from '@/router';
 import { ref } from 'vue'
-import { new_user } from '@/new_user'
+import { User } from '@/user'
 import Message from '../components/Message.vue'
-import eventBus from '../event';
+import event from '../event';
 
+const user = new User()
 const email = defineModel<string>('email')
 const password = defineModel<string>('password')
 const password_confirmation = defineModel<string>('password_confirmation')
@@ -14,13 +15,12 @@ const msg = ref('')
 const alert = ref('')
 
 
-
 function sendSignUp() {	
-	new_user.signUp(email.value || '', password.value || '', password_confirmation.value || '', 
+	user.signUp(email.value || '', password.value || '', password_confirmation.value || '', 
 		() => {			
 			router.push('/sign_in')
 			setTimeout(() => {
-				eventBus.emit("sign_in", { 
+				event.emit("sign_in", { 
 					msg: 'User registered successfully. Please login to enter!', 
 					alert: 'success' 
 				})  

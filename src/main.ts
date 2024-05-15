@@ -3,11 +3,11 @@ import './assets/main.css'
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
-import eventBus from './event'
+import event from './event'
 
 const app = createApp(App)
 
-app.config.globalProperties.$eventBus = eventBus
+app.config.globalProperties.$event = event
 
 app.use(router)
 

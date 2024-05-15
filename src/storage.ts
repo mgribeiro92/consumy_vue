@@ -20,15 +20,15 @@ class PersistentStorage implements SimpleStorage {
 
 class TransientStorage implements SimpleStorage {
 	store(key: string, value: string) {
-		localStorage.setItem(key, value)
+		sessionStorage.setItem(key, value)
 	}
 
 	get(key: string) {
-		return localStorage.getItem(key)
+		return sessionStorage.getItem(key)
 	}
 
 	remove(key: string) {
-		localStorage.removeItem(key)
+		sessionStorage.removeItem(key)
 	}
 }
 

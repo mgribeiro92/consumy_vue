@@ -12,7 +12,7 @@ export default {
   },
   created() {
 		this.storeId = this.$route.params.storeId;		
-    axios.get('/api/stores/' + this.storeId)
+    axios.get('http://127.0.0.1:3000/api/stores/' + this.storeId)
       .then(response => {
         this.data = response.data;        
       })
