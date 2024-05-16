@@ -2,100 +2,81 @@
 import { Auth } from '@/auth'
 import { ref, onMounted, onUpdated } from 'vue'
 import NavBar from '@/components/NavBar.vue';
+import { stores } from '@/stores'
 
-const auth = new Auth()
-const currentUser = ref(auth.currentUser())
-const isLoggedIn = ref(auth.isLoggedIn())
+const stores_data = ref()
+const localhost = "http://127.0.0.1:3000/"
 
-const signOut = function() {
-  console.log('logout chamado')
-  auth.signOut(() => {
-    currentUser.value = auth.currentUser()
-  })
-}
+onMounted(async () => {
+  stores_data.value = await stores.getStores()
+  console.log(stores_data.value)
+})
+
 
 </script>
 
 <template>
+  <div class="container">
 
-  <h3>Hi, {{ currentUser && currentUser.email }}</h3>    
-  <br />    
-  <a @click="signOut">Sign Out</a>    
-  
+    <div class="categories">
+    </div>
+    <hr>
+    <div class="stores">
+      <div v-for="store in stores_data" :key = "store.id">
+        <RouterLink :to="{ name: 'products', params: { storeId: store.id }}">
+          <div class="card-store">
+            <img v-if="store.image_url" class="card-img" :src="localhost + store.image_url ">
+            <img v-else class="card-img" src="../assets/dummy-image-square-1.png">
+            <div class="card-title">{{ store.name }}</div>
+          </div> 
+        </RouterLink>
+      </div>
+      
+    </div>    
+  </div>
 </template>
 
 
 <style scoped>
 
-  body {
-    align-items: left;
-    justify-content: left;
-  }
-
-  header {
-    display: flex;
-    align-items: center;
-    justify-content: right;
-    height: 100vh;
-    background-image: url('../assets/background-site.png');  
-    background-size: cover; 
-  }
-
-  .welcome {
-    width: 500px;
-    height: 400px;
-    opacity: 1.0;
-    border-radius: 20px;
-    background-color: white;
-    text-align: center;
-    padding: 40px 20px;
-    margin-right: 80px;
-    box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.1);
-  } 
-
-  .welcome img {
-    width: 200px;
-    height: 200px;
-    flex: 0.6;
-    border-left: 2px solid #fa9901    
-  }
-
-  .img-btn {
-    display: flex;
-    align-items: center; 
-  }
-
-  .btn-sign {
-    display: flex;
-    flex-direction: column;
-    flex: 0.4;
-    align-items: center;
-  }
-
-  h2 {
-		color: #fa9901
-	}
-	
-	p {
-		color: #421010
-	}
-
-  .button {
-    color: #fa9901;
-    border-bottom: 2px solid #fa9901;
-    padding: 5px 10px;
-		margin: 10px 0px;    
-		cursor: pointer;
+  a {
     text-decoration: none;
-    height: 35px;
-    width: 100px;
-    text-align: center;    
+    color: inherit;
   }
 
-  .button:hover {
-    background-color: #421010;
-    color: white;
-    border-radius: 5px;
+  .stores {
+    display: flex;
+    flex-wrap: wrap;
   }
-  
+
+  .card-store {
+    margin: 10px 12px;
+    width: 250px;
+    height: 120px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    border-radius: 10px;
+    padding: 10px;    
+  }
+
+  .card-store:hover {
+    cursor: pointer;
+    transform: translateY(-8px);
+    transition: transform 0.3s ease
+  }
+
+  .card-title {
+    font-size: 15px;
+    flex: 60%;
+    text-align: center;
+  }
+
+  .card-img {
+    width: 50px;
+    height: 80px;
+    flex: 40%;
+    border-radius: 10px;
+  }
+
 </style>

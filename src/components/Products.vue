@@ -1,59 +1,107 @@
-<script>
+<script setup lang="ts">
 
-import axios from 'axios';
+import { ref, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router';
+import { products } from '@/products';
+import { stores } from '@/stores'
 
+const products_data = ref()
+const store = ref('')
+const route = useRoute()
+const store_id = route.params.storeId
+const localhost = import.meta.env.VITE_BASE_URL
 
-export default {	
-  data() {
-    return {      
-      data: [],
-			storeId: ""
-    }
-  },
-  created() {
-		this.storeId = this.$route.params.storeId;		
-    axios.get('http://127.0.0.1:3000/api/stores/' + this.storeId)
-      .then(response => {
-        this.data = response.data;        
-      })
-      .catch(error => {
-        console.error('Erro ao buscar dados da API:', error);
-      });
-  },
-	// mounted() {
-  //   console.log(this.$route.params.storeId);    
-  // }
-}
+onMounted(async () => {
+  products_data.value = await products.getProducts(store_id)
+  store.value = await stores.getStore(store_id)
+  console.log(products_data.value)
+  console.log(store.value)
+})
+
 </script>
 
+
 <template>
-	<div class="products">	
-		<h2>Store: {{ data.store.name }}</h2>
-		<h3>Products</h3>
-		<div class="product"        
-				v-for = "product in data.products"
-				:key = "product.id"
-		>   
-				{{ product.title }}
-		</div>
+  
+  <div class="container">
+    <div class="store-row">
+      <div class="store-name">
+        <img v-if="store.image_url" :src="localhost + store.image_url">
+        <h3>{{ store.name }}</h3>        
+      </div>          
+    </div>
+    <hr>
 
-		<RouterLink to="/stores">Voltar</RouterLink>
+    <div class="products">
+      <div v-for="product in products_data" :key = "product.id">
+        <div class="card-product">
+          <img v-if="product.image_url" class="card-img" :src="localhost + product.image_url ">
+          <img v-else class="card-img" src="../assets/dummy-image-square-1.png">
+          <div class="card-title">{{ product.title }}</div>
+        </div>        
+      </div>      
+    </div> 
+  </div>
 
-	</div> 
 </template>
 
 <style scoped>
 
-	.products {
-		margin: 10px
-	}
+  img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+  }
 
-	.product {
-		color: green
-	}
+  .store-row {
+    display: flex;
+  }
 
-	a {
-		margin-top: 20px
-	}
+  .store-name {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    color: #228b22;
+    margin: 10px;
+  }
+
+  .products {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    justify-items: center;
+  }
+
+  .card-product {
+    margin: 10px 12px;
+    width: 250px;
+    height: 120px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    border-radius: 10px;
+    padding: 10px;    
+  }
+
+  .card-product:hover {
+    cursor: pointer;
+    transform: translateY(-8px);
+    transition: transform 0.3s ease
+  }
+
+  .card-img {
+    width: 50px;
+    height: 80px;
+    flex: 40%;
+    border-radius: 10px;
+  }
+
+  
+  .card-title {
+    font-size: 15px;
+    flex: 60%;
+    text-align: center;
+  }
+
 
 </style>

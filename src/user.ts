@@ -25,7 +25,7 @@ class User {
   }
   
   failure(response: Response, onFailure: () => void) {
-    console.log("FRACASSO", response)
+    console.log("FRACASSO", response)    
     onFailure()
   }
 
@@ -36,21 +36,23 @@ class User {
         email: email,
         password: password,
         password_confirmation: password_confirmation,
-        role: "buyer"
       }
     }
     const response = await fetch (
-      BASE_URL + '/new', {
+      import.meta.env.VITE_BASE_URL + '/new', {
       method: 'POST',
       headers: {
         "Accept": "application/json",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "X-API-KEY": "8MlfP2mtJVVnICGCJBQ2IeBvSbo="
       },
       body: JSON.stringify(body)
     })
     .then((response) => {
       if (response.ok) {
         this.success(response, onSuccess)
+        const resposta = response.json()
+        console.log(resposta)
       }
       else {
         this.failure(response, onFailure)

@@ -27,29 +27,15 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView,      
-      beforeEnter (_, __, next) { 
-        if (auth.isLoggedIn()) {       
-          next();
-          return;
-        }
-        next('/sign_in')
-      }                 
+      component: HomeView             
     }, 
     {
       path: '/stores',
       name: 'stores',      
-      component: Stores,
-      beforeEnter (_, __, next) { 
-        if (auth.isLoggedIn()) {       
-          next();
-          return;
-        }
-        next('/sign_in')
-      }       
+      component: Stores,     
     },
     {
-      path: '/stores/:storeId/products',
+      path: '/store/:storeId/products',
       name: 'products',      
       component: Products,         
     },

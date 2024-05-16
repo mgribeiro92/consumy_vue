@@ -10,7 +10,7 @@ export default {
     }
   },
   created() {
-    axios.get('http://127.0.0.1:3000/api/stores')
+    axios.get('http://127.0.0.1:3000/stores')
       .then(response => {
         this.stores = response.data;
       })

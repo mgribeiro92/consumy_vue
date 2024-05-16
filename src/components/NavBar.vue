@@ -8,45 +8,120 @@ import { ref, onMounted } from 'vue'
 const auth = new Auth()
 const currentUser = ref(auth.currentUser())
 
-const logOut = function() {
+function logOut() {
   console.log('logout chamado')
   auth.signOut()
   window.location.reload()
 }
+
+const isSidebarOpen = ref(false);
+
+const toggleSidebar = () => {
+  isSidebarOpen.value = !isSidebarOpen.value;
+};
+
 </script>
 
 <template> 
-<nav class="navbar navbar-expand">
-  <div class="container-fluid">
-    <a class="navbar-brand">Delivery</a>    
-    <div class="collapse navbar-collapse">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">          
-          <RouterLink class="nav-link" to="/">Home</RouterLink>
-        </li>
-        <li class="nav-item">          
-          <RouterLink class="nav-link" to="/stores">Stores</RouterLink>
-        </li>                       
-      </ul>        
-      <ul class="d-flex navbar-nav">
-        <li class="nav-item">
-          <RouterLink to="/user" class="nav-link">Hi, {{ currentUser && currentUser.email }}!</RouterLink>
-        </li>				        
-        <li class="nav-item">
-          <button @click="logOut()" class="nav-link">Log out</button>
-        </li>
-      </ul>
+  <nav class="navbar navbar-expand">
+    <div class="container-fluid">
+      <a class="navbar-brand">SaborExpress</a>    
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">          
+            <RouterLink class="nav-link" to="/">Home</RouterLink>
+          </li>                                 
+        </ul>        
+        <ul class="d-flex navbar-nav">
+          <li class="nav-item">
+            <img src="../assets/carrinho-de-compras.png" alt="cart">
+            <!-- <RouterLink style="font-weight: bold" class="nav-link" to="/stores">Go to cart</RouterLink> -->
+          </li>
+          <div class="dropdown">
+            <button class="dropbtn dropdown-toggle">
+              <img src="../assets/do-utilizador (2).png" alt="Profile">
+            </button>            
+            <div class="dropdown-content">
+              <a href="#">Orders</a>
+              <a href="#">Profile</a>
+              <hr>
+              <button @click="logOut">Sign Out</button>
+            </div>
+          </div>
+          
+        </ul>
+      </div>
     </div>
-  </div>
-</nav>
+  
+  </nav>
+
 </template>
 
 <style scoped>
 
-    nav {      
-      background:	#d0f0c0;
-      width: 100%;
-      
-    }
+  nav {      
+    background:	white;
+    width: 100%;
+    border-bottom: 2px solid #8b0000;
+    position: relative;
+    z-index: 1; /* Garante que a navbar fique acima da sidebar */
+  }
+
+  img {
+    width: 30px;
+    color: #8b0000;
+    margin-right: 10px;
+  }
+
+
+  .nav-link {
+    color: 	#8b0000;
+  }
+
+
+  .nav-link:hover {
+    color: #228b22;
+  }
+
+  .navbar-brand {
+    color:	#8b0000;
+  }
+
+  /* Estilos para o botão do menu */
+.dropbtn {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+/* Estilos para o dropdown quando estiver aberto */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  background-color: #fff;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+/* Estilos para os links no dropdown */
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+/* Estilos para os links no dropdown quando hover */
+.dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
+
+/* Mostrar o dropdown quando o botão é clicado */
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
   
 </style>

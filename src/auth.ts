@@ -32,7 +32,8 @@ class Auth {
 		}
 
 		return {
-			email: this.getFallback('email')
+			email: this.getFallback('email'),
+			token: this.getFallback('token')
 		}
 	}
 
