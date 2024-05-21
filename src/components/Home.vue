@@ -3,21 +3,29 @@ import { Auth } from '@/auth'
 import { ref, onMounted, onUpdated } from 'vue'
 import NavBar from '@/components/NavBar.vue';
 import { stores } from '@/stores'
+import Cart from '../components/Cart.vue'
 
 const stores_data = ref()
 const localhost = "http://127.0.0.1:3000/"
+const show_cart = ref(false)
 
 onMounted(async () => {
   stores_data.value = await stores.getStores()
   console.log(stores_data.value)
 })
 
+const toggleCart = () => {
+  show_cart.value = !show_cart.value;
+}
+
+
 
 </script>
 
 <template>
+  <NavBar @cartClicked="toggleCart"/>
   <div class="container">
-
+    <h3>Stores</h3>
     <div class="categories">
     </div>
     <hr>
@@ -30,9 +38,14 @@ onMounted(async () => {
             <div class="card-title">{{ store.name }}</div>
           </div> 
         </RouterLink>
-      </div>
-      
+      </div>      
     </div>    
+  </div>
+
+  <div v-if="show_cart" class="modal">
+    <div class="modal-content">
+      <Cart @cartClosed="toggleCart"/>
+    </div>
   </div>
 </template>
 

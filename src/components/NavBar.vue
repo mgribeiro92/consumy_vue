@@ -8,18 +8,19 @@ import { ref, onMounted } from 'vue'
 const auth = new Auth()
 const currentUser = ref(auth.currentUser())
 
+const show_cart = ref(false)
+
 function logOut() {
   console.log('logout chamado')
   auth.signOut()
   window.location.reload()
 }
 
-const isSidebarOpen = ref(false);
+const emit = defineEmits(['cartClicked']);
 
-const toggleSidebar = () => {
-  isSidebarOpen.value = !isSidebarOpen.value;
-};
-
+const handleCartClick = () => {
+  emit('cartClicked');
+}
 </script>
 
 <template> 
@@ -33,9 +34,8 @@ const toggleSidebar = () => {
           </li>                                 
         </ul>        
         <ul class="d-flex navbar-nav">
-          <li class="nav-item">
-            <img src="../assets/carrinho-de-compras.png" alt="cart">
-            <!-- <RouterLink style="font-weight: bold" class="nav-link" to="/stores">Go to cart</RouterLink> -->
+          <li class="nav-item">         
+            <img @click="handleCartClick" src="../assets/carrinho-de-compras.png" alt="cart">
           </li>
           <div class="dropdown">
             <button class="dropbtn dropdown-toggle">
@@ -51,8 +51,7 @@ const toggleSidebar = () => {
           
         </ul>
       </div>
-    </div>
-  
+    </div>  
   </nav>
 
 </template>
@@ -71,6 +70,7 @@ const toggleSidebar = () => {
     width: 30px;
     color: #8b0000;
     margin-right: 10px;
+    cursor: pointer;
   }
 
 
