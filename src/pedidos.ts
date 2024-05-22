@@ -32,12 +32,13 @@ class Order {
   
   createOrderItem(cart: any, order_id: number) {
     console.log(cart)
-    cart.forEach(async (order_item: { product: any; quantity: any }) => {
+    cart.forEach(async (order_item: { product: any; quantity: any; price:any }) => {
       const body_order_item = {
         order_item: {
           order_id: order_id,
           product_id: order_item.product,
-          amount: order_item.quantity
+          amount: order_item.quantity,
+          price: order_item.price
         }
       }
       console.log(body_order_item)
@@ -61,6 +62,21 @@ class Order {
     console.log('pegando os pedidos')
     const response = await fetch(
       import.meta.env.VITE_BASE_URL + '/buyers/orders', {
+        method: 'GET',
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "Authorization": "Bearer" + ' ' + current_user?.token,
+          "X-API-KEY": "8MlfP2mtJVVnICGCJBQ2IeBvSbo="
+        },
+      }
+    )
+    return await response.json() 
+  }
+
+  async getOrder(order_id: any) {
+    const response = await fetch(
+      import.meta.env.VITE_BASE_URL + '/buyers/orders/' + order_id, {
         method: 'GET',
         headers: {
           "Accept": "application/json",

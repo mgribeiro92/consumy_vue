@@ -1,16 +1,27 @@
 <script setup lang="ts">
 
 import NavBar from './NavBar.vue'
+import Cart from './Cart.vue'
 import { Order } from '../pedidos'
 import { onMounted, ref } from 'vue';
 
 const order =  new Order()
 const orders_data = ref()
+const show_cart = ref(false)
 
 onMounted(async () => {
   orders_data.value = await order.getOrders()
   console.log(orders_data.value)
 })
+
+const toggleCart = () => {
+  show_cart.value = !show_cart.value;
+}
+
+async function orderAgain(order_id: any) {
+  console.log('pedir novamente')
+  const order_data = await order.getOrder(order_id)
+}
 
 const getStatusClass = (state: string) => {
   return {
@@ -27,21 +38,21 @@ const getStatusClass = (state: string) => {
 
 <template>
 
-  <NavBar/>
+  <NavBar @cartClicked="toggleCart"/>
   <div class="container">
     <h2>Seus pedidos!</h2>
-    <hr>
-    
+    <hr>    
     <div class="orders">
       <div v-for="order in orders_data">
         <div class="card-order" :class="getStatusClass(order.state)">
           <div class="order-info">
             <h5>Pedido: {{ order.id }}</h5>
             <h6>Loja: {{ order.store_name }}</h6>
-            <span>Itens do pedido:</span>
+            <span>Itens do pedido: </span>
             <div v-for="order_item in order.order_items">
-              <p>{{ order_item.amount }}x {{ order_item.product.title }} - R$ {{ order_item.product.price }}</p>
+              <p>{{ order_item.amount }}x {{ order_item.product.title }} - R$ {{ order_item.price }}</p>
             </div>
+            <span @click="orderAgain(order.id)" class="order-again"><img src="../assets/repetir (1).png">   Bora pedir novo?</span>
           </div>
           <div class="order-state" >            
             <h6 id="created" v-if="order.state == 'created' ">Aguardando pedido ser aceito</h6>
@@ -50,12 +61,17 @@ const getStatusClass = (state: string) => {
             <h6 id="finished" v-else-if="order.state == 'finished' ">Pedido finalizado :)</h6>
             <h6 id="rejected" v-else>Pedido rejeitado :(</h6>
             <p>Pedido criado em: {{ order.created_at }}</p>
-            <p>Valor total do pedido: {{ order.price }}</p>
+            <p>Valor total do pedido: R$ {{ order.total }}</p>
           </div>
-          
         </div>        
       </div>
     </div>    
+  </div>
+
+  <div v-if="show_cart" class="modal">
+    <div class="modal-content">
+      <Cart @cartClosed="toggleCart"/>
+    </div>
   </div>
 
 </template>
@@ -83,6 +99,21 @@ const getStatusClass = (state: string) => {
   .order-state {
     flex: 1;
     margin: 0px 10px;
+  }
+
+  img {
+    width: 20px;
+    height: 20px;
+  }
+
+  .order-again{
+    color: #808080;
+  }
+
+  .order-again:hover {
+    color: darkblue;
+    cursor: pointer;
+    text-decoration: underline;
   }
 
   #created {

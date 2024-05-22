@@ -2,6 +2,7 @@
 
 import { ref, onMounted, onUpdated } from 'vue';
 import { Order } from '../pedidos'
+import { useRouter } from 'vue-router';
 
 interface CartItem {
   product: number;
@@ -11,6 +12,7 @@ interface CartItem {
   final_price: number;
 }
 
+const router = useRouter()
 const order = new Order()
 const cart = ref<CartItem[]>([]);
 const price_formatted = ref()
@@ -49,7 +51,9 @@ async function newOrder(){
   if(response_new_order.status == 200) {
     localStorage.removeItem('cartItem')
     handleCartClose()
+    router.push('/orders')
   }
+
 }
 
 function removeProduct(index: number) {
