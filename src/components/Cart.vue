@@ -32,9 +32,16 @@ function recalculateTotalPrice() {
   // } 
 }
 
-const emit = defineEmits(['cartClosed']);
-const handleCartClose = () => {
+const emit = defineEmits(['cartClosed', 'productUpdate']);
+function handleCartClose() {
   emit('cartClosed');
+}
+
+function updateProduct(product_id: number, index: number) {
+  emit('productUpdate', product_id)
+  cart.value.splice(index, 1)
+  localStorage.setItem('cartItem', JSON.stringify(cart.value))
+  console.log('updtte chmanado')
 }
 
 function sendOrder(){
@@ -43,9 +50,7 @@ function sendOrder(){
 }
 
 function removeProduct(index: number) {
-  console.log('product que vai ser removido', index)
   cart.value.splice(index, 1)
-  console.log(cart.value)
   localStorage.setItem('cartItem', JSON.stringify(cart.value))
   recalculateTotalPrice()
 }
@@ -55,14 +60,14 @@ function removeProduct(index: number) {
 <template>
 
   <div class="cart">
-    <h3>Carrinho vazio</h3>
+    <h3>Carrinho</h3>
     <span v-if="!cart">Seu carrinho esta vazio, continue a comprar!</span>
     <div v-else v-for="product, index in cart">
       <div class="itens-cart">
-        <p>{{ product.quantity }}x {{ product.title }}</p>
+        <p class="itens">{{ product.quantity }}x {{ product.title }}</p>
         <p>{{ product.final_price }}</p>
-        <a>Editar</a>
-        <button @click="removeProduct(index)">Remover</button>
+        <button class="btn-update" @click="updateProduct(product.product, index)">Editar</button>
+        <button class="btn-remove" @click="removeProduct(index)">Remover</button>
       </div>
     </div>
     <p>{{ total_price }}</p>
@@ -86,6 +91,10 @@ function removeProduct(index: number) {
   .itens-cart{
     display: flex;
     justify-content: space-between;
+  }
+
+  .itens {
+    width: 250px;
   }
 
   .btn-row {
@@ -125,6 +134,18 @@ function removeProduct(index: number) {
   .btn-finish:hover {
     color: white;
     background-color: #228b22;
+  }
+
+  .btn-remove {
+    color: grey;
+    border: none;
+    background-color: transparent;
+  }
+
+  .btn-update {
+    color: #8b0000;
+    border: none;
+    background-color: transparent;
   }
 
 

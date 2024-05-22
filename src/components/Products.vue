@@ -21,6 +21,7 @@ interface CartItem {
   quantity: number;
   price: number | undefined;
   final_price: number;
+  store_id: any;
 }
 
 const product_quantity = ref<number>(1)
@@ -31,7 +32,6 @@ const route = useRoute()
 const store_id = route.params.storeId
 const localhost = import.meta.env.VITE_BASE_URL
 const show_cart = ref(false)
-const show_product_update = ref(false)
 const product_clicked = ref(false)
 const product_selected = ref<Product>()
 // const cart = ref([])
@@ -55,12 +55,14 @@ onUpdated(() => {
   console.log(cart.value)
 })
 
-const toggleCart = () => {
+function toggleCart() {
   show_cart.value = !show_cart.value;
 }
 
-const showProductUpdate = () => {
-  show_product_update.value = !show_product_update.value;
+function showProductUpdate(product_id: number) {
+  show_cart.value = !show_cart.value;
+  product_clicked.value = !product_clicked.value;
+  productClicked(product_id)
 }
 
 function productClicked(product_id: number) {
@@ -69,22 +71,47 @@ function productClicked(product_id: number) {
   product_price.value = product_selected.value?.price
 }
 
-function sendProductCart() {
-  console.log(product_selected.value)
+function mandarProduto() {
   const cart_item = {
     product: product_selected.value?.id,
     title: product_selected.value?.title,
     quantity: product_quantity.value,
     price: product_selected.value?.price,
-    final_price: product_final_price.value  
+    final_price: product_final_price.value,
+    store_id: store_id
   }
   console.log(cart_item)
   cart.value.push(cart_item);
   localStorage.setItem('cartItem', JSON.stringify(cart.value))
   product_clicked.value = false
+  show_cart.value = !show_cart.value
   msg.value = "Produto adicionado ao carrinho!"
   alert.value = "info"
 }
+
+function sendProductCart() {
+  if (cart.value.length == 0) {
+    mandarProduto()
+  } else {
+    let loja_carrinho = cart.value[0].store_id
+    if(loja_carrinho && loja_carrinho != store_id) {
+      msg.value = "A loja é diferente do outro produto"
+      alert.value = "error"
+      product_clicked.value = !product_clicked.value
+    } else {
+      mandarProduto()
+    }   
+  }  
+}
+
+// function allStoreIdsEqual(products: Product[]): boolean {
+//   const firstStoreId = products[0].store_id;
+//   return products.every(product => product.store_id === firstStoreId);
+// }
+
+// const result = allStoreIdsEqual(cart.value)
+// console.log(result)
+
 
 </script>
 
@@ -114,7 +141,7 @@ function sendProductCart() {
 
   <div v-if="show_cart" class="modal">  
     <div class="modal-content">      
-      <Cart @cartClosed="toggleCart"/>
+      <Cart @cartClosed="toggleCart" @productUpdate="showProductUpdate"/>
     </div>
   </div>
 
