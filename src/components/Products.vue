@@ -4,8 +4,8 @@ import { ref, onMounted, computed, onUpdated } from 'vue'
 import { useRouter, useRoute } from 'vue-router';
 import { products } from '@/products';
 import { stores } from '@/stores'
-import Cart from '../components/Cart.vue'
-import NavBar from '../components/NavBar.vue';
+import Cart from './Cart.vue'
+import NavBar from './NavBar.vue';
 import Message from './Message.vue';
 
 interface Product {
@@ -49,10 +49,8 @@ onMounted(async () => {
 })
 
 onUpdated(() => {
-  console.log('update do prducts')
   const cartItem = localStorage.getItem('cartItem')
   cart.value = cartItem ? JSON.parse(cartItem) : []
-  console.log(cart.value)
 })
 
 function toggleCart() {
@@ -80,7 +78,6 @@ function mandarProduto() {
     final_price: product_final_price.value,
     store_id: store_id
   }
-  console.log(cart_item)
   cart.value.push(cart_item);
   localStorage.setItem('cartItem', JSON.stringify(cart.value))
   product_clicked.value = false
@@ -103,15 +100,6 @@ function sendProductCart() {
     }   
   }  
 }
-
-// function allStoreIdsEqual(products: Product[]): boolean {
-//   const firstStoreId = products[0].store_id;
-//   return products.every(product => product.store_id === firstStoreId);
-// }
-
-// const result = allStoreIdsEqual(cart.value)
-// console.log(result)
-
 
 </script>
 

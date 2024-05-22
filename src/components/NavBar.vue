@@ -42,7 +42,7 @@ const handleCartClick = () => {
               <img src="../assets/do-utilizador (2).png" alt="Profile">
             </button>            
             <div class="dropdown-content">
-              <a href="#">Orders</a>
+              <RouterLink class="nav-link" to="/orders">Orders</RouterLink>
               <a href="#">Profile</a>
               <hr>
               <button @click="logOut">Sign Out</button>

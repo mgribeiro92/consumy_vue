@@ -4,7 +4,6 @@ const auth = new Auth()
 const current_user = auth.currentUser()
 
 async function getStores() {
-  console.log('LET GET THE STORES')
   const response = await fetch (
     "http://localhost:3000" + '/stores', {
       method: "GET",

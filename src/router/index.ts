@@ -6,6 +6,7 @@ import Stores from '../components/Stores.vue'
 import Products from '../components/Products.vue'
 import UserView from '@/views/UserView.vue'
 import Teste from '../views/TesteView.vue'
+import OrdersView from '../views/OrdersView.vue'
 import { Auth } from '@/auth'
 
 const auth = new Auth()
@@ -43,6 +44,11 @@ const router = createRouter({
       path: '/user',
       name: 'user',      
       component: UserView,         
+    },
+    {
+      path: '/orders',
+      name: 'orders',      
+      component: OrdersView,         
     },
     {
       path: '/teste',

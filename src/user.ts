@@ -1,4 +1,3 @@
-import { BASE_URL } from "./plugins/fetch"
 import { createStorage, type SimpleStorage } from './storage'
 
 class User {

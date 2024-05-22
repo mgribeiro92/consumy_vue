@@ -1,26 +1,25 @@
 <script setup lang="ts">
 
 import { ref, onMounted, onUpdated } from 'vue';
+import { Order } from '../pedidos'
 
 interface CartItem {
   product: number;
-  title: string | undefined;
+  title: string;
   quantity: number;
-  price: number | undefined;
+  price: number;
   final_price: number;
 }
 
+const order = new Order()
 const cart = ref<CartItem[]>([]);
 const price_formatted = ref()
 const total_price = ref(0)
 
-
 onMounted(() => {
-  const cartItem = localStorage.getItem('cartItem');
-  cart.value = cartItem ? JSON.parse(cartItem) : [];
-  console.log(cart.value)
+  const cartItem = localStorage.getItem('cartItem')
+  cart.value = cartItem ? JSON.parse(cartItem) : []
   recalculateTotalPrice()
-
 })
 
 function recalculateTotalPrice() {
@@ -44,9 +43,13 @@ function updateProduct(product_id: number, index: number) {
   console.log('updtte chmanado')
 }
 
-function sendOrder(){
-  console.log('vamos mandar o pedido')
-  console.log(cart.value)
+async function newOrder(){
+  const response_new_order = await order.createOrder(cart.value)
+  console.log(response_new_order)
+  if(response_new_order.status == 200) {
+    localStorage.removeItem('cartItem')
+    handleCartClose()
+  }
 }
 
 function removeProduct(index: number) {
@@ -73,7 +76,7 @@ function removeProduct(index: number) {
     <p>{{ total_price }}</p>
     <div class="btn-row">
       <button class="btn-closed" @click="handleCartClose">Fechar</button>
-      <button class="btn-finish" @click="sendOrder()">Finalizar Pedido</button>
+      <button class="btn-finish" @click="newOrder()">Finalizar Pedido</button>
     </div>
   </div>
   
