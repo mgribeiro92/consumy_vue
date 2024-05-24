@@ -2,16 +2,26 @@
 
 import NavBar from './NavBar.vue'
 import Cart from './Cart.vue'
-import { Order } from '../pedidos'
+import { Order } from '../orders'
 import { onMounted, ref } from 'vue';
+
+interface CartItem {
+  product: number | undefined;
+  title: string | undefined;
+  quantity: number;
+  price: number | undefined;
+  final_price: number;
+  store_id: any;
+  store_name: string
+}
 
 const order =  new Order()
 const orders_data = ref()
 const show_cart = ref(false)
+const cart = ref<CartItem[]>([]);
 
 onMounted(async () => {
   orders_data.value = await order.getOrders()
-  console.log(orders_data.value)
 })
 
 const toggleCart = () => {
@@ -19,9 +29,25 @@ const toggleCart = () => {
 }
 
 async function orderAgain(order_id: any) {
-  console.log('pedir novamente')
+  cart.value = []
   const order_data = await order.getOrder(order_id)
+  const order_items = order_data.order_items
+  for(const order_item of order_items) {
+    const cart_item = {
+      product:  order_item.product.id,
+      title: order_item.product.title,
+      quantity: order_item.amount,
+      price: order_item.product.price,
+      final_price: order_item.price,
+      store_id: order_data.store_id,
+      store_name: order_data.store_name
+    }
+    cart.value.push(cart_item);
+  }
+  localStorage.setItem('cartItem', JSON.stringify(cart.value))
+  show_cart.value = !show_cart.value
 }
+
 
 const getStatusClass = (state: string) => {
   return {
@@ -68,11 +94,7 @@ const getStatusClass = (state: string) => {
     </div>    
   </div>
 
-  <div v-if="show_cart" class="modal">
-    <div class="modal-content">
-      <Cart @cartClosed="toggleCart"/>
-    </div>
-  </div>
+  <Cart v-if="show_cart" @cartClosed="toggleCart" />
 
 </template>
 

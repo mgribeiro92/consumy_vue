@@ -18,8 +18,6 @@ const toggleCart = () => {
   show_cart.value = !show_cart.value;
 }
 
-
-
 </script>
 
 <template>
@@ -41,12 +39,9 @@ const toggleCart = () => {
       </div>      
     </div>    
   </div>
+  
+  <Cart v-if="show_cart"  @cartClosed="toggleCart"/>
 
-  <div v-if="show_cart" class="modal">
-    <div class="modal-content">
-      <Cart @cartClosed="toggleCart"/>
-    </div>
-  </div>
 </template>
 
 

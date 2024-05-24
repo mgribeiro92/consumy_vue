@@ -14,22 +14,22 @@ import NavBar from './components/NavBar.vue';
 <style>
 
   .modal {
-      display: block;
-      position: fixed;
-      z-index: 1;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-    }
+    display: block;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
 
   .modal-content {
     background-color: white;
-    margin: 15% auto;
+    margin: 100px auto;
     padding: 20px;
     border: 1px solid #888;
-    width: 30%;
+    width: 40%;
   }
 
 </style>

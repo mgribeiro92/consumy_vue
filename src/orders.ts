@@ -32,13 +32,13 @@ class Order {
   
   createOrderItem(cart: any, order_id: number) {
     console.log(cart)
-    cart.forEach(async (order_item: { product: any; quantity: any; price:any }) => {
+    cart.forEach(async (order_item: { product: any; quantity: any; final_price:any }) => {
       const body_order_item = {
         order_item: {
           order_id: order_id,
           product_id: order_item.product,
           amount: order_item.quantity,
-          price: order_item.price
+          price: order_item.final_price
         }
       }
       console.log(body_order_item)

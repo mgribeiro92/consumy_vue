@@ -1,8 +1,10 @@
 <script setup lang="ts">
 
 import { ref, onMounted, onUpdated } from 'vue';
-import { Order } from '../pedidos'
+import { Order } from '../orders'
+import { stores } from '@/stores'
 import { useRouter } from 'vue-router';
+import ProductSelected from './ProductSelected.vue';
 
 interface CartItem {
   product: number;
@@ -10,27 +12,37 @@ interface CartItem {
   quantity: number;
   price: number;
   final_price: number;
+  store_id: any;
+  store_name: string;
 }
 
 const router = useRouter()
 const order = new Order()
 const cart = ref<CartItem[]>([]);
-const price_formatted = ref()
 const total_price = ref(0)
+const store = ref()
+const product_id = ref()
+const product_index = ref()
 
-onMounted(() => {
+console.log(product_id.value)
+onMounted(async () => {
   const cartItem = localStorage.getItem('cartItem')
   cart.value = cartItem ? JSON.parse(cartItem) : []
   recalculateTotalPrice()
+  if(cart.value.length != 0) {
+    store.value = cart.value[0].store_name
+  }
 })
+
+// onUpdated(() => {
+//   const cartItem = localStorage.getItem('cartItem')
+//   cart.value = cartItem ? JSON.parse(cartItem) : []
+// })
+
 
 function recalculateTotalPrice() {
   total_price.value = 0
-  total_price.value = cart.value.reduce((acc, item) => acc + item.final_price, 0);
-  // for (const item of cart.value) {
-  //   total_price.value += item.final_price 
-  //   item.final_price = item.final_price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })  
-  // } 
+  total_price.value = cart.value.reduce((acc, item) => acc + item.final_price, 0) 
 }
 
 const emit = defineEmits(['cartClosed', 'productUpdate']);
@@ -38,11 +50,13 @@ function handleCartClose() {
   emit('cartClosed');
 }
 
-function updateProduct(product_id: number, index: number) {
-  emit('productUpdate', product_id)
+function updateProduct(product: number, index: number) {
+  console.log('produdo sendo atualizado')
+  // emit('productUpdate', product)
   cart.value.splice(index, 1)
   localStorage.setItem('cartItem', JSON.stringify(cart.value))
-  console.log('updtte chmanado')
+  product_id.value = product
+  product_index.value = index
 }
 
 async function newOrder(){
@@ -53,7 +67,6 @@ async function newOrder(){
     handleCartClose()
     router.push('/orders')
   }
-
 }
 
 function removeProduct(index: number) {
@@ -62,28 +75,53 @@ function removeProduct(index: number) {
   recalculateTotalPrice()
 }
 
+function formatarMoeda(valor: any) {
+  return valor.toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL'
+  });
+};
+
+function handleShowCart() {
+  console.log('Evento showCart foi acionado');
+  const cartItem = localStorage.getItem('cartItem')
+  cart.value = cartItem ? JSON.parse(cartItem) : []
+  product_id.value = null
+}
 </script>
 
 <template>
 
-  <div class="cart">
-    <h3>Carrinho</h3>
-    <span v-if="!cart">Seu carrinho esta vazio, continue a comprar!</span>
-    <div v-else v-for="product, index in cart">
-      <div class="itens-cart">
-        <p class="itens">{{ product.quantity }}x {{ product.title }}</p>
-        <p>{{ product.final_price }}</p>
-        <button class="btn-update" @click="updateProduct(product.product, index)">Editar</button>
-        <button class="btn-remove" @click="removeProduct(index)">Remover</button>
+  <div v-show="!product_id" class="modal">  
+    <div class="modal-content"> 
+      <div class="cart">
+        <h3 style="text-align: center;">Carrinho</h3>
+        <span v-if="cart.length == 0">Seu carrinho esta vazio, continue a comprar!</span>
+        <div v-else>
+          <h5>Loja:</h5>
+          <h6>{{ store }}</h6>
+          <h5>Produtos:</h5> 
+          <div v-for="product, index in cart">         
+            <div class="itens-cart">          
+              <div class="itens">
+                <div>{{ product.quantity }}x {{ product.title }}</div>
+                <div class="cart-price">{{  formatarMoeda(product.final_price) }}</div>
+                <button class="btn-update" @click="updateProduct(product.product, index)">Editar</button>
+                <button class="btn-remove" @click="removeProduct(index)">Remover</button>
+              </div>
+            </div>
+          </div>
+          <div v-show="cart.length != 0"><h5>Valor total: </h5>{{ formatarMoeda(total_price) }}</div>      
+        </div>
+        <div class="btn-row">
+          <button class="btn-closed" @click="handleCartClose">Fechar</button>
+          <button class="btn-finish" @click="newOrder()">Finalizar Pedido</button>
+        </div>
       </div>
     </div>
-    <p>{{ total_price }}</p>
-    <div class="btn-row">
-      <button class="btn-closed" @click="handleCartClose">Fechar</button>
-      <button class="btn-finish" @click="newOrder()">Finalizar Pedido</button>
-    </div>
   </div>
-  
+
+  <ProductSelected v-if="product_id" :product_id="product_id" :product_index="product_index" @showCart="handleShowCart"/>
 
 </template>
 
@@ -92,16 +130,41 @@ function removeProduct(index: number) {
   .cart{
     display: flex;
     flex-direction: column;
-    min-height: 150px;
+    min-height: 200px;
+  }
+
+  .store-img {
+    display: flex;
+    margin-bottom: 10px;
+  }
+
+  .cart-img {
+    width: 50px;
+    height: 80px;
+    flex: 43%;
+    border-radius: 10px;
+  }
+
+  .cart-store {
+    font-size: 25px;
+    flex: 70%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .itens-cart{
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+  }
+
+  .cart-price {
+    margin-left: 50px;
   }
 
   .itens {
-    width: 250px;
+    display: flex;
+    align-items: center;
   }
 
   .btn-row {
@@ -147,12 +210,14 @@ function removeProduct(index: number) {
     color: grey;
     border: none;
     background-color: transparent;
+    margin-left: 0px;
   }
 
   .btn-update {
     color: #8b0000;
     border: none;
     background-color: transparent;
+    margin-left: auto;
   }
 
 

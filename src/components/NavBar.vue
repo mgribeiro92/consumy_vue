@@ -17,7 +17,6 @@ function logOut() {
 }
 
 const emit = defineEmits(['cartClicked']);
-
 const handleCartClick = () => {
   emit('cartClicked');
 }
