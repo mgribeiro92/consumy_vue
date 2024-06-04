@@ -5,7 +5,22 @@ const current_user = auth.currentUser()
 
 async function getStores() {
   const response = await fetch (
-    "http://localhost:3000" + '/stores', {
+    import.meta.env.VITE_BASE_URL + '/stores', {
+      method: "GET",
+      headers: {
+				"Accept": "application/json",
+				"Content-Type": "application/json",
+				"X-API-KEY": "8MlfP2mtJVVnICGCJBQ2IeBvSbo=",
+        "Authorization": "Bearer" + ' ' + current_user?.token
+			},
+    }
+  )
+  return await response.json()
+}
+
+async function getStoresSearch(search: string) {
+  const response = await fetch (
+    import.meta.env.VITE_BASE_URL + '/stores?query=' + search, {
       method: "GET",
       headers: {
 				"Accept": "application/json",
@@ -36,5 +51,6 @@ async function getStore(store_id: any) {
 
 export const stores = {
   getStores,
+  getStoresSearch,
   getStore
 }

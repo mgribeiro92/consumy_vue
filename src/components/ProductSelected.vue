@@ -15,9 +15,9 @@ interface Product {
 }
 
 interface CartItem {
-  product: number | undefined;
+  product_id: number | undefined;
   title: string | undefined;
-  quantity: number;
+  amount: number;
   price: number | undefined;
   final_price: number;
   store_id: any;
@@ -64,16 +64,17 @@ const product_final_price = computed(() => product_quantity.value * product_sele
 const emit = defineEmits(['showCart'])
 
 function mandarProduto() {
-  console.log('mandar produto chamado')
+  console.log('produto enviado para o carrinho')
   const cart_item = {
-    product: product_selected.value?.id,
+    product_id: product_selected.value?.id,
     title: product_selected.value?.title,
-    quantity: product_quantity.value,
+    amount: product_quantity.value,
     price: product_selected.value?.price,
     final_price: product_final_price.value,
     store_id: store_id.value,
     store_name: store_name.value
   }
+  console.log(cart_item)
   cart.value.push(cart_item);
   localStorage.setItem('cartItem', JSON.stringify(cart.value))
   // product_clicked.value = false

@@ -3,15 +3,15 @@ import { Auth } from './auth'
 const auth = new Auth()
 const current_user = auth.currentUser()
 
-class Order {
-  async createOrder(cart: any) {
-    console.log('criando o pedido')
-    console.log(cart)
+class Orders {
+  async createOrder(store: any, order_items: any) {
     const body_order = {
       order: {
-        store_id: cart[0].store_id
+        store_id: store,
+        order_items_attributes: order_items
       }
     }
+    console.log(body_order)
     const response = await fetch(
       import.meta.env.VITE_BASE_URL + '/buyers/orders', {
         method: 'POST',
@@ -25,37 +25,42 @@ class Order {
       }
     )
     const order_data = await response.json()
-    const order_id = order_data.id 
-    this.createOrderItem(cart, order_id)
-    return response
+    console.log(order_data)
+    // const order_id = order_data.id
+    // this.createOrderItem(cart, order_id)
+    return order_data
   }
   
-  createOrderItem(cart: any, order_id: number) {
+  async createOrderItem(cart: any, order_id: number) {
     console.log(cart)
-    cart.forEach(async (order_item: { product: any; quantity: any; final_price:any }) => {
+    for (const order_item of cart) {
       const body_order_item = {
         order_item: {
           order_id: order_id,
           product_id: order_item.product,
           amount: order_item.quantity,
-          price: order_item.final_price
         }
       }
-      console.log(body_order_item)
       const response = await fetch(
         import.meta.env.VITE_BASE_URL + '/order_items', {
           method: 'POST',
           headers: {
             "Accept": "application/json",
             "Content-Type": "application/json",
-            "Authorization": "Bearer" + ' ' + current_user?.token,
+            "Authorization": "Bearer " + current_user?.token,
             "X-API-KEY": "8MlfP2mtJVVnICGCJBQ2IeBvSbo="
           },
           body: JSON.stringify(body_order_item)
         }
       )
-      return await response.json()
-    })
+      const result = await response.json()
+      console.log('Resposta da requisição:', result)
+      
+      await new Promise(resolve => setTimeout(resolve, 2000))
+    }
+
+    const orderComplete = true
+    return orderComplete
   }
   
   async getOrders() {
@@ -90,4 +95,4 @@ class Order {
   }
 }
 
-export { Order }
+export { Orders }

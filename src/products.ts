@@ -6,7 +6,23 @@ const current_user = auth.currentUser()
 async function getProducts(store_id: any, page: any) {
   const url = import.meta.env.VITE_BASE_URL + '/stores/' + store_id + '/products?page=' + page
   // const url = 'http://localhost:3000/stores/3/products?page=3'
-  console.log(url)
+  const response = await fetch(
+    url, {
+      method: 'GET',
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "X-API-KEY": "8MlfP2mtJVVnICGCJBQ2IeBvSbo=",
+        "Authorization": "Bearer" + ' ' + current_user?.token
+      },
+    }
+  )
+  return await response.json()
+}
+
+async function getProductsSearch(store_id: any, page: any, query:any) {
+  const url = import.meta.env.VITE_BASE_URL + '/stores/' + store_id + '/products?page=' + page + '&query=' + query
+  // const url = 'http://localhost:3000/stores/3/products?page=3'
   const response = await fetch(
     url, {
       method: 'GET',
@@ -37,5 +53,6 @@ async function getProduct(product_id: any) {
 
 export const products = {
   getProducts,
+  getProductsSearch,
   getProduct
 }

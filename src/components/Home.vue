@@ -5,12 +5,22 @@ import NavBar from '@/components/NavBar.vue';
 import { stores } from '@/stores'
 import Cart from '../components/Cart.vue'
 
-const stores_data = ref()
+
+interface Store {
+  image_url: string;
+  name: string;
+  id: number;
+}
+
+const stores_data = ref<Store[]>([])
 const localhost = "http://127.0.0.1:3000/"
 const show_cart = ref(false)
+const search_stores = ref()
+console.log(search_stores.value)
 
 onMounted(async () => {
-  stores_data.value = await stores.getStores()
+  const store_response = await stores.getStores()
+  stores_data.value = store_response.stores
   console.log(stores_data.value)
 })
 
@@ -18,16 +28,30 @@ const toggleCart = () => {
   show_cart.value = !show_cart.value;
 }
 
+async function submitSearch() {
+  const store_response = await stores.getStoresSearch(search_stores.value)
+  stores_data.value = store_response.stores
+  console.log(stores_data.value.length)
+}
+
+
 </script>
 
 <template>
   <NavBar @cartClicked="toggleCart"/>
   <div class="container">
-    <h3>Stores</h3>
-    <div class="categories">
+    <div class="store-title">
+      <h3>Stores</h3>
+      <form class="d-flex" @submit.prevent="submitSearch">
+        <input class="form-control me-2" type="search" placeholder="Pesquisar Lojas" v-model="search_stores">
+        <button class="btn btn-outline-success" type="submit">Pesquisar</button>
+      </form>
     </div>
     <hr>
-    <div class="stores">
+    <div class="categories">
+    </div>
+    <div v-if="stores_data.length == 0">Não encontramos nenhuma loja com essa pesquisa!</div>
+    <div v-else class="stores">
       <div v-for="store in stores_data" :key = "store.id">
         <RouterLink :to="{ name: 'products', params: { storeId: store.id }}">
           <div class="card-store">
@@ -50,6 +74,12 @@ const toggleCart = () => {
   a {
     text-decoration: none;
     color: inherit;
+  }
+
+  .store-title {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
   }
 
   .stores {

@@ -61,7 +61,7 @@ class User {
   
   async userProfile() {
     console.log('funcao chamada do userprofile')   
-    const token = this.isToken()  
+    const token = this.isToken()      
     const response = await fetch (
       'http://127.0.0.1:3000/me', {
       method: 'GET',
@@ -70,6 +70,32 @@ class User {
         "Content-Type": "application/json",
         "Authorization": "Bearer" + ' ' + token
       },           
+    })
+    const userData = await response.json()
+    console.log(userData)
+    return userData
+  }
+
+  async userUpdate(email: string, password: string, user_id:any){
+    console.log('funcao para ser atualizado')
+    console.log(email)
+    console.log(password)
+    console.log(user_id)
+    const token = this.isToken()
+    const body = {
+      user: {
+        email: email,
+        password: password,
+      }
+    }  
+    const response = await fetch (
+      import.meta.env.VITE_BASE_URL + '/update_user/' + user_id, {
+      method: 'PUT',
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body)            
     })
     const userData = await response.json()
     console.log(userData)

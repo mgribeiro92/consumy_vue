@@ -14,7 +14,6 @@ const password_confirmation = defineModel<string>('password_confirmation')
 const msg = ref('')
 const alert = ref('')
 
-
 function sendSignUp() {	
 	user.signUp(email.value || '', password.value || '', password_confirmation.value || '', 
 		() => {			

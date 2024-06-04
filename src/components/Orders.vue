@@ -2,8 +2,9 @@
 
 import NavBar from './NavBar.vue'
 import Cart from './Cart.vue'
-import { Order } from '../orders'
+import { Orders } from '../orders'
 import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 interface CartItem {
   product: number | undefined;
@@ -15,13 +16,24 @@ interface CartItem {
   store_name: string
 }
 
-const order =  new Order()
+const order =  new Orders()
 const orders_data = ref()
 const show_cart = ref(false)
-const cart = ref<CartItem[]>([]);
+const cart = ref<CartItem[]>([])
+const last_order = ref()
+
+const router = useRouter();
+const showLastOrder = (router.currentRoute.value.query.showLastOrder == 'true')
+console.log(showLastOrder)
 
 onMounted(async () => {
-  orders_data.value = await order.getOrders()
+  if (showLastOrder) {
+    last_order.value = await order.getOrders()
+    orders_data.value = last_order.value[0]
+    orders_data.value = [orders_data.value]
+  } else {
+    orders_data.value = await order.getOrders()
+  }
 })
 
 const toggleCart = () => {
@@ -69,7 +81,7 @@ const getStatusClass = (state: string) => {
     <h2>Seus pedidos!</h2>
     <hr>    
     <div class="orders">
-      <div v-for="order in orders_data">
+      <div v-for="order in orders_data" :key="order.id">
         <div class="card-order" :class="getStatusClass(order.state)">
           <div class="order-info">
             <h5>Pedido: {{ order.id }}</h5>
@@ -80,7 +92,7 @@ const getStatusClass = (state: string) => {
             </div>
             <span @click="orderAgain(order.id)" class="order-again"><img src="../assets/repetir (1).png">   Bora pedir novo?</span>
           </div>
-          <div class="order-state" >            
+          <div class="order-state">            
             <h6 id="created" v-if="order.state == 'created' ">Aguardando pedido ser aceito</h6>
             <h6 id="accepted" v-else-if="order.state == 'accepted' ">Pedido aceito. Huum</h6>
             <h6 id="delivery" v-else-if="order.state == 'delivery' ">Pedido saiu para entrega. Yeaah</h6>

@@ -37,6 +37,7 @@ const show_cart = ref(false)
 const cart = ref<CartItem[]>([]);
 const total_pages = ref()
 const current_page = ref(1)
+const search_products = ref()
 
 const msg = ref('')
 const alert = ref('')
@@ -72,6 +73,12 @@ async function prevPage() {
   }
 }
 
+async function submitSearch() {
+  const response = await products.getProductsSearch(store_id, current_page.value, search_products.value)
+  products_data.value = response.result.products
+  total_pages.value = response.result.pagination.pages
+  console.log(search_products.value)
+}
 
 function toggleCart() {
   show_cart.value = !show_cart.value;
@@ -92,13 +99,20 @@ function showCart() {
     <div class="store-row">
       <div class="store-name">
         <img v-if="store.image_url" :src="localhost + store.image_url">
-        <h3>{{ store.name }}</h3>        
-      </div>          
+        <h3>{{ store.name }} - Produtos</h3>
+      </div>
+        <form class="d-flex" @submit.prevent="submitSearch">
+          <input class="form-control" type="search" placeholder="Pesquisar Produtos" v-model="search_products">
+          <button class="btn btn-outline-success" type="submit">Pesquisar</button>
+      </form>                
     </div>
-    <hr>
-
-    <h4>Produtos</h4>    
+    <hr>     
     
+    <div class="pagination" v-show="total_pages > 1">
+      <button @click="prevPage" :disabled="current_page == 1">Anterior</button>
+      <span>{{ current_page }}</span>
+      <button @click="nextPage" :disabled="current_page == total_pages">Próxima</button>
+    </div>
     <div class="products">      
       <div v-for="product in products_data" :key = "product.id">
         <div class="card-product" @click="product_id = product.id">
@@ -113,12 +127,7 @@ function showCart() {
           </div>
         </div>        
       </div>      
-    </div>
-    <div class="pagination" v-show="total_pages > 1">
-      <button @click="prevPage" :disabled="current_page == 1">Anterior</button>
-      <span>{{ current_page }}</span>
-      <button @click="nextPage" :disabled="current_page == total_pages">Próxima</button>
-    </div>
+    </div>    
   </div>
 
        
@@ -132,13 +141,16 @@ function showCart() {
 <style scoped>
 
   img {
-    width: 100px;
-    height: 80%;
+    width: 80px;
+    height: 80px;
     border-radius: 10px;
   }
 
   .store-row {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
   }
 
   .store-name {
@@ -146,8 +158,11 @@ function showCart() {
     gap: 20px;
     align-items: center;
     color: #228b22;
-    margin: 10px;
-  }
+   }
+
+   .d-flex {
+    height: 40px;
+   }
 
   .products {
     display: grid;
