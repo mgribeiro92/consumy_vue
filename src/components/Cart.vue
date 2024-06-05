@@ -5,6 +5,7 @@ import { Orders } from '../orders'
 import { stores } from '@/stores'
 import { useRouter } from 'vue-router';
 import ProductSelected from './ProductSelected.vue';
+import CreditCard from './CreditCard.vue'
 
 interface CartItem {
   product_id: number;
@@ -24,6 +25,7 @@ const store = ref()
 const product_id = ref()
 const product_index = ref()
 const order_in_progress = ref(false)
+const show_card = ref(false)
 
 onMounted(async () => {
   const cartItem = localStorage.getItem('cartItem')
@@ -53,13 +55,14 @@ function updateProduct(product: number, index: number) {
   product_index.value = index
 }
 
-async function newOrder(){
+async function newOrder(credit_card: JSON) {
+  show_card.value = false
   order_in_progress.value = true
-  const store = cart.value[0].store_id
-  const order_items = cart.value.map(item => ({ product_id: item.product_id, amount: item.amount }))
-  const response_new_order = await order.createOrder(store, order_items)
-  localStorage.removeItem('cartItem')
-  router.push({ path: '/orders', query: { showLastOrder: 'true' } });
+  // const store = cart.value[0].store_id
+  // const order_items = cart.value.map(item => ({ product_id: item.product_id, amount: item.amount }))
+  // const response_new_order = await order.createOrder(store, order_items)
+  // localStorage.removeItem('cartItem')
+  // router.push({ path: '/orders', query: { showLastOrder: 'true' } });
 }
 
 function removeProduct(index: number) {
@@ -87,7 +90,7 @@ function handleShowCart() {
 
 <template>
 
-  <div v-if="!product_id && !order_in_progress" class="modal">  
+  <div v-if="!product_id && !order_in_progress && !show_card" class="modal">  
     <div class="modal-content"> 
       <div class="cart">
         <h3 style="text-align: center;">Carrinho</h3>
@@ -110,13 +113,14 @@ function handleShowCart() {
         </div>
         <div class="btn-row">
           <button class="btn-closed" @click="handleCartClose">Fechar</button>
-          <button class="btn-finish" @click="newOrder()">Finalizar Pedido</button>
+          <button class="btn-finish" @click="show_card = true">Fazer Pagamento</button>
         </div>
       </div>
     </div>
   </div>
 
   <ProductSelected v-else-if="product_id" :product_id="product_id" :product_index="product_index" @showCart="handleShowCart"/>
+  <CreditCard v-else-if="show_card" @sendCreditCard="newOrder"/>
 
   <div v-else class="modal">
     <div class="modal-content"> 

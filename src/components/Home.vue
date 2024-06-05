@@ -16,12 +16,10 @@ const stores_data = ref<Store[]>([])
 const localhost = "http://127.0.0.1:3000/"
 const show_cart = ref(false)
 const search_stores = ref()
-console.log(search_stores.value)
 
 onMounted(async () => {
   const store_response = await stores.getStores()
   stores_data.value = store_response.stores
-  console.log(stores_data.value)
 })
 
 const toggleCart = () => {
