@@ -59,8 +59,7 @@ class User {
     })
   }
   
-  async userProfile() {
-    console.log('funcao chamada do userprofile')   
+  async userProfile() { 
     const token = this.isToken()      
     const response = await fetch (
       'http://127.0.0.1:3000/me', {
@@ -72,7 +71,6 @@ class User {
       },           
     })
     const userData = await response.json()
-    console.log(userData)
     return userData
   }
 

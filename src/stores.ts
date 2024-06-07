@@ -20,7 +20,7 @@ async function getStores() {
 
 async function getStoresSearch(search: string) {
   const response = await fetch (
-    import.meta.env.VITE_BASE_URL + '/stores?query=' + search, {
+    import.meta.env.VITE_BASE_URL + '/stores?' + search, {
       method: "GET",
       headers: {
 				"Accept": "application/json",
