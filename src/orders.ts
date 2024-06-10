@@ -93,6 +93,32 @@ class Orders {
     )
     return await response.json() 
   }
-}
 
+  async sendPayment(credit_card: any, order: any) {
+    const body = {     
+      payment: {
+        order_id: order.id,
+        value: order.total,
+        number: credit_card.number,
+        valid: credit_card.valid,
+        cvv: credit_card.cvv
+      } 
+    }
+    const response = await fetch(
+      import.meta.env.VITE_BASE_URL + '/payments', {
+        method: 'POST',
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "Authorization": "Bearer" + ' ' + current_user?.token,
+          "X-API-KEY": "8MlfP2mtJVVnICGCJBQ2IeBvSbo="
+        },
+        body: JSON.stringify(body)
+      }
+    )
+    const data = await response.json()
+    console.log(data)
+  }
+
+}
 export { Orders }

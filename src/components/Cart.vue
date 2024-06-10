@@ -56,13 +56,17 @@ function updateProduct(product: number, index: number) {
 }
 
 async function newOrder(credit_card: JSON) {
+  console.log('passando aqui na neworder')
   show_card.value = false
   order_in_progress.value = true
-  // const store = cart.value[0].store_id
-  // const order_items = cart.value.map(item => ({ product_id: item.product_id, amount: item.amount }))
-  // const response_new_order = await order.createOrder(store, order_items)
-  // localStorage.removeItem('cartItem')
-  // router.push({ path: '/orders', query: { showLastOrder: 'true' } });
+  console.log(credit_card)
+  const store = cart.value[0].store_id
+  const order_items = cart.value.map(item => ({ product_id: item.product_id, amount: item.amount }))
+  const response_new_order = await order.createOrder(store, order_items)
+  console.log(response_new_order)
+  order.sendPayment(credit_card, response_new_order)
+  localStorage.removeItem('cartItem')
+  router.push({ path: '/orders', query: { lastOrder: response_new_order.id } });
 }
 
 function removeProduct(index: number) {
@@ -120,7 +124,7 @@ function handleShowCart() {
   </div>
 
   <ProductSelected v-else-if="product_id" :product_id="product_id" :product_index="product_index" @showCart="handleShowCart"/>
-  <CreditCard v-else-if="show_card" @sendCreditCard="newOrder"/>
+  <CreditCard v-else-if="show_card" :total="total_price" @sendCreditCard="newOrder"/>
 
   <div v-else class="modal">
     <div class="modal-content"> 

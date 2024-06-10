@@ -49,7 +49,7 @@ async function filterStore(filter: any) {
   <NavBar @cartClicked="toggleCart"/>
   <div class="container">
     <div class="store-title">
-      <h3>Stores</h3>
+      <h3>Lojas!</h3>
       <form class="d-flex" @submit.prevent="submitSearch">
         <input class="form-control me-2" type="search" placeholder="Pesquisar Lojas" v-model="search_stores">
         <button class="btn btn-outline-success" type="submit">Pesquisar</button>

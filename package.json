@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "serve": "vite",
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
@@ -16,6 +17,7 @@
   },
   "dependencies": {
     "@kyvg/vue3-notification": "^3.2.1",
+    "@microsoft/fetch-event-source": "^2.0.1",
     "axios": "^1.6.8",
     "bootstrap": "^5.3.3",
     "mitt": "^3.0.1",

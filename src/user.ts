@@ -75,10 +75,6 @@ class User {
   }
 
   async userUpdate(email: string, password: string, user_id:any){
-    console.log('funcao para ser atualizado')
-    console.log(email)
-    console.log(password)
-    console.log(user_id)
     const token = this.isToken()
     const body = {
       user: {
@@ -87,7 +83,7 @@ class User {
       }
     }  
     const response = await fetch (
-      import.meta.env.VITE_BASE_URL + '/update_user/' + user_id, {
+      import.meta.env.VITE_BASE_URL + '/users/' + user_id, {
       method: 'PUT',
       headers: {
         "Accept": "application/json",
@@ -98,6 +94,19 @@ class User {
     const userData = await response.json()
     console.log(userData)
     return userData
+  }
+
+  async deleteUser(user_id: any) {
+    const response = await fetch (
+      import.meta.env.VITE_BASE_URL + '/users/' + user_id, {
+      method: 'DELETE',
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },      
+    })
+    const delete_user = await response.json()
+    console.log(delete_user)
   }
 
 }

@@ -4,9 +4,12 @@ import NavBar from './NavBar.vue';
 import type { UserType, Address } from '../types'
 import { User } from '../user'
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 
+const router = useRouter()
 const user = new User()
 const user_profile = ref<UserType>({} as UserType)
+const user_id = ref()
 const address = ref<Address>({} as Address);
 const update_user = ref(false)
 const email = defineModel<string>('email')
@@ -15,7 +18,11 @@ const password = defineModel<string>('password')
 onMounted(async () => {
   const user_info = await user.userProfile()
   user_profile.value = user_info
-  address.value = user_info.address
+  user_id.value = user_info.id
+  if (user_info.address) {
+    address.value = user_info.address
+  }
+
   console.log(user_profile.value)
 })
 
@@ -26,7 +33,15 @@ function onUpdate(){
 
 function deleteUser() {
   console.log('excluir usuario')
+  if (confirm('Você tem certeza que deseja desativar sua conta?')) {
+    user.deleteUser(user_id.value)
+    router.push('/sign_in')
+    alert('Conta desativada com sucesso!')
+  } else {
+    alert('Ação cancelada!')
+  }
 }
+
 
 </script>
 
@@ -45,8 +60,8 @@ function deleteUser() {
       <div><span class="user-subtitle">Cidade: </span>{{ address.city }} - {{ address.state }}</div>
       <div><span class="user-subtitle">CEP: </span>{{ address.zip_code }}</div>
       <div><span class="user-subtitle">Pais: </span>{{ address.country }}</div>
-      <button @click="update_user = true">Editar</button>
-      <button @click="deleteUser">Excluir</button> 
+      <button style="margin-right: 20px;" class="btn btn-outline-primary" @click="update_user = true">Editar</button>
+      <button class="btn btn-outline-danger" @click="deleteUser">Excluir</button> 
 
     </div>
 

@@ -7,8 +7,12 @@ const valid = ref()
 const cvv = ref()
 const order_in_progress = ref(false)
 
+const { total } = defineProps(['total'])
+console.log(total)
+
 const emit = defineEmits(['sendCreditCard'])
 function getPayment() {
+  console.log('ta passando aqui no get payment')
   order_in_progress.value = true
   const credit_card = {
     number: number.value,
@@ -31,7 +35,7 @@ const formatCardNumber = () => {
 
 <template>
 
-<div class="modal">
+  <div class="modal">
     <div class="modal-content">
       <h3 style="text-align: center;">Pagamento</h3>
       <p>Insira as informações do seu cartão de crédito</p>
@@ -54,6 +58,7 @@ const formatCardNumber = () => {
             </div>
           </div>          
         </div>
+        <div>Valor total: {{ total }}</div>
         <button class="mt-4" @click="getPayment">Finalizar Pedido</button>
       </div>
     </div>

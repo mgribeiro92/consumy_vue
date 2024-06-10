@@ -1,10 +1,13 @@
 <script setup lang="ts">
 
+import { Auth } from "@/auth"
 import NavBar from './NavBar.vue'
 import Cart from './Cart.vue'
+import Message from "./Message.vue"
 import { Orders } from '../orders'
 import { onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
+import { fetchEventSource } from "@microsoft/fetch-event-source";
 
 interface CartItem {
   product: number | undefined;
@@ -16,25 +19,33 @@ interface CartItem {
   store_name: string
 }
 
+const auth = new Auth()
 const order =  new Orders()
 const orders_data = ref()
 const show_cart = ref(false)
 const cart = ref<CartItem[]>([])
 const last_order = ref()
+const order_id = ref()
+const msg = ref()
+const alert = ref()
 
-const router = useRouter();
-const showLastOrder = (router.currentRoute.value.query.showLastOrder == 'true')
-console.log(showLastOrder)
+const router = useRouter()
+const route = useRoute()
+const last_order_id = route.query.lastOrder;
+console.log(last_order_id)
 
 onMounted(async () => {
-  if (showLastOrder) {
-    last_order.value = await order.getOrders()
-    orders_data.value = last_order.value[0]
+  if (last_order_id) {
+    orders_data.value = await order.getOrder(last_order_id)
     orders_data.value = [orders_data.value]
+    order_id.value = orders_data.value[0].id
+    console.log(orders_data.value)
   } else {
     orders_data.value = await order.getOrders()
   }
 })
+
+connectionOrder()
 
 const toggleCart = () => {
   show_cart.value = !show_cart.value;
@@ -63,13 +74,48 @@ async function orderAgain(order_id: any) {
 
 const getStatusClass = (state: string) => {
   return {
-    created: 'created',
+    payment_success: 'created',
     accepted: 'accepted',
     delivery: 'delivery',
     finished: 'finished',
-    rejected: 'rejected'
+    rejected: 'rejected',
+    payment_failure: 'rejected'
   }[state];
 };
+
+function connectionOrder() {
+  console.log('chamando o event source')
+  if (last_order_id) {
+  const currentUser = auth.currentUser() 
+  fetchEventSource (
+    import.meta.env.VITE_BASE_URL + '/orders/' + last_order_id + '/status_order',{
+      method: "GET",
+      headers: {
+        "Accept": "application/json",
+        "X-API-KEY": import.meta.env.X_API_KEY,
+        "Authorization": "Bearer" + ' ' + currentUser?.token
+      },
+      async onopen(response) {
+        if (response.ok) {
+          console.log('connected consumy!')
+          return
+        }
+      },
+      onmessage(message) {
+        if (message.event === "status-order") {
+          let data = JSON.parse(message.data)
+          console.log(data.order)
+          if (data.order) {
+            msg.value = "Seu pedido teve uma atualização!"
+            alert.value = "info"
+          }
+        }
+      },
+    }
+  )}
+}
+
+
 
 </script>
 
@@ -78,6 +124,7 @@ const getStatusClass = (state: string) => {
 
   <NavBar @cartClicked="toggleCart"/>
   <div class="container">
+    <Message v-show="msg" :message="msg" :alert="alert"/>
     <h2>Seus pedidos!</h2>
     <hr>    
     <div class="orders">
@@ -93,7 +140,8 @@ const getStatusClass = (state: string) => {
             <span @click="orderAgain(order.id)" class="order-again"><img src="../assets/repetir (1).png">   Bora pedir novo?</span>
           </div>
           <div class="order-state">            
-            <h6 id="created" v-if="order.state == 'created' ">Aguardando pedido ser aceito</h6>
+            <h6 id="created" v-if="order.state == 'payment_success' ">Pagamento finalizado, aguardando pedido ser aceito</h6>
+            <h6 id="accepted" v-else-if="order.state == 'payment_failure' ">Pagamento recusado!</h6>
             <h6 id="accepted" v-else-if="order.state == 'accepted' ">Pedido aceito. Huum</h6>
             <h6 id="delivery" v-else-if="order.state == 'delivery' ">Pedido saiu para entrega. Yeaah</h6>
             <h6 id="finished" v-else-if="order.state == 'finished' ">Pedido finalizado :)</h6>
