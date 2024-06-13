@@ -7,9 +7,7 @@ import Products from '../components/Products.vue'
 import UserView from '@/views/UserView.vue'
 import Teste from '../views/TesteView.vue'
 import OrdersView from '../views/OrdersView.vue'
-import { Auth } from '@/auth'
 
-const auth = new Auth()
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [

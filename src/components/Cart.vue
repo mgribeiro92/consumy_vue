@@ -1,24 +1,24 @@
 <script setup lang="ts">
 
-import { ref, onMounted, onUpdated, computed } from 'vue';
-import { Orders } from '../orders'
+import { ref, onMounted, onUpdated, watch } from 'vue';
+import { orders } from '../orders'
 import { stores } from '@/stores'
 import { useRouter } from 'vue-router';
 import ProductSelected from './ProductSelected.vue';
 import CreditCard from './CreditCard.vue'
+import Message from './Message.vue';
 
 interface CartItem {
   product_id: number;
   title: string;
   amount: number;
   price: number;
-  final_price: number;
+  final_price: string;
   store_id: any;
   store_name: string;
 }
 
 const router = useRouter()
-const order = new Orders()
 const cart = ref<CartItem[]>([])
 const total_price = ref(0)
 const store = ref()
@@ -26,47 +26,65 @@ const product_id = ref()
 const product_index = ref()
 const order_in_progress = ref(false)
 const show_card = ref(false)
+const msg = ref('')
+const alert = ref('')
 
 onMounted(async () => {
   const cartItem = localStorage.getItem('cartItem')
   cart.value = cartItem ? JSON.parse(cartItem) : []
   recalculateTotalPrice()
+  console.log(cart.value.length)
+  console.log('montando o carrinho')
   if(cart.value.length != 0) {
     store.value = cart.value[0].store_name
   }
 })
 
-function recalculateTotalPrice() {
-  total_price.value = 0
-  total_price.value = cart.value.reduce((acc, item) => acc + item.final_price, 0) 
-}
+
+const recalculateTotalPrice = () => {
+  total_price.value = cart.value.reduce((total, item) => {
+    return total + parseFloat(item.final_price);
+  }, 0);
+};
+
+
 
 const emit = defineEmits(['cartClosed', 'productUpdate']);
 function handleCartClose() {
-  emit('cartClosed');
+  emit('cartClosed', cart.value.length);
 }
 
 function updateProduct(product: number, index: number) {
+  console.log(product)
   console.log('produdo sendo atualizado')
   // emit('productUpdate', product)
   cart.value.splice(index, 1)
   localStorage.setItem('cartItem', JSON.stringify(cart.value))
   product_id.value = product
   product_index.value = index
+  console.log(product_id.value)
 }
 
 async function newOrder(credit_card: JSON) {
   console.log('passando aqui na neworder')
-  show_card.value = false
-  order_in_progress.value = true
   console.log(credit_card)
+  show_card.value = false
   const store = cart.value[0].store_id
+  console.log(cart.value)
   const order_items = cart.value.map(item => ({ product_id: item.product_id, amount: item.amount }))
-  const response_new_order = await order.createOrder(store, order_items)
-  console.log(response_new_order)
-  order.sendPayment(credit_card, response_new_order)
-  localStorage.removeItem('cartItem')
-  router.push({ path: '/orders', query: { lastOrder: response_new_order.id } });
+  console.log(order_items)
+  const response_new_order = await orders.createOrder(store, order_items)
+  console.log(response_new_order.error[0])
+  if (response_new_order.error[0]) {
+    msg.value = response_new_order.error[0]
+    alert.value = "error"
+  } else {
+
+    order_in_progress.value = true
+  }
+  // orders.sendPayment(credit_card, response_new_order)
+  // localStorage.removeItem('cartItem')
+  // router.push({ path: '/orders', query: { lastOrder: response_new_order.id } });
 }
 
 function removeProduct(index: number) {
@@ -90,6 +108,8 @@ function handleShowCart() {
   product_id.value = null
 }
 
+watch(cart, recalculateTotalPrice, { deep: true });
+
 </script>
 
 <template>
@@ -98,12 +118,13 @@ function handleShowCart() {
     <div class="modal-content"> 
       <div class="cart">
         <h3 style="text-align: center;">Carrinho</h3>
+        <Message v-show="msg" :message="msg" :alert="alert"/>
         <span v-if="cart.length == 0">Seu carrinho esta vazio, continue a comprar!</span>
         <div v-else>
           <h5>Loja:</h5>
           <h6>{{ store }}</h6>
           <h5>Produtos:</h5> 
-          <div v-for="product, index in cart">         
+          <div v-for="product, index in cart">
             <div class="itens-cart">          
               <div class="itens">
                 <div>{{ product.amount }}x {{ product.title }}</div>

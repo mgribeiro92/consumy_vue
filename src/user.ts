@@ -74,12 +74,11 @@ class User {
     return userData
   }
 
-  async userUpdate(email: string, password: string, user_id:any){
+  async userUpdate(email: string, user_id:any){
     const token = this.isToken()
     const body = {
       user: {
         email: email,
-        password: password,
       }
     }  
     const response = await fetch (
@@ -109,6 +108,57 @@ class User {
     console.log(delete_user)
   }
 
+  async newAddress(user_id: any, street: any, number: any, cep: any, city: any, state: any) {
+    const body = {
+      address: {
+        user_id: user_id,
+        street: street,
+        number: number,
+        zip_code: cep,
+        city: city,
+        state: state,
+        country: "Brazil"
+      }
+    }
+    const response = await fetch(
+      import.meta.env.VITE_BASE_URL + '/addresses', {
+        method: 'POST',
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "Authorization": "Bearer" + ' ' + this.isToken()
+        },
+        body: JSON.stringify(body)          
+      } 
+    )
+    const data = await response.json()
+    console.log(data)
+  }
+  
+  async updateAddress(address_id: any, street: any, number: any, cep: any, city: any, state: any) {
+    const body = {
+      address: {
+        street: street,
+        number: number,
+        zip_code: cep,
+        city: city,
+        state: state,
+        country: "Brazil"
+      }
+    }
+    const response = await fetch(
+      import.meta.env.VITE_BASE_URL + '/addresses/' + address_id, {
+        method: 'PUT',
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "Authorization": "Bearer" + ' ' + this.isToken()
+        },
+        body: JSON.stringify(body)          
+      } 
+    )
+    return await response.json()
+  }
 }
 
 

@@ -1,9 +1,8 @@
 import { Auth } from "./auth"
 
-const auth = new Auth()
-const current_user = auth.currentUser()
-
 async function getStores() {
+  const auth = new Auth()
+  const current_user = auth.currentUser()
   const response = await fetch (
     import.meta.env.VITE_BASE_URL + '/stores', {
       method: "GET",
@@ -19,6 +18,8 @@ async function getStores() {
 }
 
 async function getStoresSearch(search: string) {
+  const auth = new Auth()
+  const current_user = auth.currentUser()
   const response = await fetch (
     import.meta.env.VITE_BASE_URL + '/stores?' + search, {
       method: "GET",
@@ -34,6 +35,8 @@ async function getStoresSearch(search: string) {
 }
 
 async function getStore(store_id: any) {
+  const auth = new Auth()
+  const current_user = auth.currentUser()
   const response = await fetch (
     "http://localhost:3000" + '/stores/' + store_id, {
       method: "GET",

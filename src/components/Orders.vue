@@ -4,15 +4,15 @@ import { Auth } from "@/auth"
 import NavBar from './NavBar.vue'
 import Cart from './Cart.vue'
 import Message from "./Message.vue"
-import { Orders } from '../orders'
+import { orders } from '../orders'
 import { onMounted, ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 
 interface CartItem {
-  product: number | undefined;
+  product_id: number | undefined;
   title: string | undefined;
-  quantity: number;
+  amount: number;
   price: number | undefined;
   final_price: number;
   store_id: any;
@@ -20,7 +20,6 @@ interface CartItem {
 }
 
 const auth = new Auth()
-const order =  new Orders()
 const orders_data = ref()
 const show_cart = ref(false)
 const cart = ref<CartItem[]>([])
@@ -28,38 +27,49 @@ const last_order = ref()
 const order_id = ref()
 const msg = ref()
 const alert = ref()
+const cart_quantity = ref()
 
 const router = useRouter()
 const route = useRoute()
 const last_order_id = route.query.lastOrder;
 console.log(last_order_id)
 
-onMounted(async () => {
-  if (last_order_id) {
-    orders_data.value = await order.getOrder(last_order_id)
-    orders_data.value = [orders_data.value]
-    order_id.value = orders_data.value[0].id
-    console.log(orders_data.value)
-  } else {
-    orders_data.value = await order.getOrders()
-  }
+
+onMounted(() => {
+  const cartItem = localStorage.getItem('cartItem')
+  const cart = cartItem ? JSON.parse(cartItem) : []
+  cart_quantity.value = cart.length
+  allOrders()
 })
 
-connectionOrder()
+async function allOrders() {
+  if (last_order_id) {
+    orders_data.value = await orders.getOrder(last_order_id)
+    orders_data.value = [orders_data.value]
+    order_id.value = orders_data.value[0].id
+    connectionOrder()
+  } else {
+    orders_data.value = await orders.getOrders()
+  }
+}
 
-const toggleCart = () => {
+
+function toggleCart(cart_length: any) {
   show_cart.value = !show_cart.value;
+  console.log('fechando o cart')
+  cart_quantity.value = cart_length
+  console.log(cart_quantity.value)
 }
 
 async function orderAgain(order_id: any) {
   cart.value = []
-  const order_data = await order.getOrder(order_id)
+  const order_data = await orders.getOrder(order_id)
   const order_items = order_data.order_items
   for(const order_item of order_items) {
     const cart_item = {
-      product:  order_item.product.id,
+      product_id:  order_item.product.id,
       title: order_item.product.title,
-      quantity: order_item.amount,
+      amount: order_item.amount,
       price: order_item.product.price,
       final_price: order_item.price,
       store_id: order_data.store_id,
@@ -67,6 +77,7 @@ async function orderAgain(order_id: any) {
     }
     cart.value.push(cart_item);
   }
+  console.log(cart.value)
   localStorage.setItem('cartItem', JSON.stringify(cart.value))
   show_cart.value = !show_cart.value
 }
@@ -84,7 +95,6 @@ const getStatusClass = (state: string) => {
 };
 
 function connectionOrder() {
-  console.log('chamando o event source')
   if (last_order_id) {
   const currentUser = auth.currentUser() 
   fetchEventSource (
@@ -102,12 +112,13 @@ function connectionOrder() {
         }
       },
       onmessage(message) {
-        if (message.event === "status-order") {
+        if (message.event === "new-status") {
           let data = JSON.parse(message.data)
-          console.log(data.order)
           if (data.order) {
+            console.log(data.order)
             msg.value = "Seu pedido teve uma atualização!"
             alert.value = "info"
+            allOrders()
           }
         }
       },
@@ -115,14 +126,12 @@ function connectionOrder() {
   )}
 }
 
-
-
 </script>
 
 
 <template>
 
-  <NavBar @cartClicked="toggleCart"/>
+  <NavBar @cartClicked="toggleCart" :cart_quantity="cart_quantity"/>
   <div class="container">
     <Message v-show="msg" :message="msg" :alert="alert"/>
     <h2>Seus pedidos!</h2>

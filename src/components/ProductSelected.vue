@@ -11,7 +11,9 @@ interface Product {
   title: string,
   price: number,
   image_url: string,
-  id: number
+  id: number,
+  description: Text;
+  inventory: number;
 }
 
 interface CartItem {
@@ -118,12 +120,13 @@ function sendProductCart() {
         </div>          
         <div class="product-info">
           <h4 style="text-align: center">{{product_selected.title}}</h4>
-          <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit.</p>
+          <p>{{ product_selected.description }}</p>
           <p>R$ {{ product_selected.price }}</p>
-          <div class="quantity-price">            
+          <div v-if="product_selected.inventory" class="quantity-price">            
             <input style="width: 80px" type="number" min="0" v-model="product_quantity" value="1"/>
             <button class="btn-product" :class="{ 'disabled-button': product_quantity <= 0 }" :disabled="product_quantity <= 0" @click="sendProductCart">Adicionar R${{ product_final_price }}</button>
-          </div>          
+          </div>
+          <div v-else>Produto Indisponível</div>          
         </div>
      </div>    
     </div>
@@ -188,9 +191,6 @@ function sendProductCart() {
     background-color: #228b22;
   }
 
-  .modal-content {
-    min-width: 600px;
-  }
 
   .close {
     position: absolute;

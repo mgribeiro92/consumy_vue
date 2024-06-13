@@ -4,6 +4,7 @@ export interface UserType {
 }
 
 export interface Address {
+  id: number,
   street: string,
   city: string,
   number: string,

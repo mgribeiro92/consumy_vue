@@ -13,7 +13,9 @@ interface Product {
   title: string,
   price: number,
   image_url: string,
-  id: number
+  id: number;
+  description: Text;
+  inventory: number
 }
 
 interface CartItem {
@@ -38,6 +40,7 @@ const cart = ref<CartItem[]>([]);
 const total_pages = ref()
 const current_page = ref(1)
 const search_products = ref()
+const cart_quantity = ref()
 
 const msg = ref('')
 const alert = ref('')
@@ -50,6 +53,7 @@ onMounted(async () => {
   store.value = await stores.getStore(store_id)
   const cartItem = localStorage.getItem('cartItem')
   cart.value = cartItem ? JSON.parse(cartItem) : []
+  cart_quantity.value = cart.value.length
 })
 
 onUpdated(() => {
@@ -80,9 +84,13 @@ async function submitSearch() {
   console.log(search_products.value)
 }
 
-function toggleCart() {
+function toggleCart(cart_length: any) {
   show_cart.value = !show_cart.value;
+  console.log('fechando o cart')
+  cart_quantity.value = cart_length
+  console.log(cart_quantity.value)
 }
+
 
 function showCart() {
   show_cart.value = !show_cart.value
@@ -93,7 +101,7 @@ function showCart() {
 
 <template>
   
-  <NavBar @cartClicked="toggleCart"/> 
+  <NavBar @cartClicked="toggleCart" :cart_quantity="cart_quantity"/> 
   <div class="container">
     <Message v-show="msg" :message="msg" :alert="alert"/>
     <div class="store-row">
@@ -122,8 +130,9 @@ function showCart() {
           </div>
           <div class="product-info">
             <div class="card-title">{{ product.title }}</div>
-            <div>Lorem ipsum dolor sit amet consectetur adipisicing elit.</div>
-            <div>Valor: R$ {{ product.price }}</div>
+            <div class="card-description"> {{ product.description }}</div>
+            <div class="card-description" v-if="product.inventory">Valor: R$ {{ product.price }}</div>
+            <div class="card-description" v-else>Produto Indisponível</div>
           </div>
         </div>        
       </div>      
@@ -160,7 +169,7 @@ function showCart() {
     color: #228b22;
    }
 
-   .d-flex {
+  .d-flex {
     height: 40px;
    }
 
@@ -169,6 +178,10 @@ function showCart() {
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
     justify-items: center;
+  }
+
+  .card-description {
+    text-align: center;
   }
 
   .card-product {

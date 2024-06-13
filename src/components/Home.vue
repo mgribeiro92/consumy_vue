@@ -14,25 +14,37 @@ interface Store {
   category: string;
 }
 
+const auth = new Auth()
 const stores_data = ref<Store[]>([])
 const localhost = "http://127.0.0.1:3000/"
 const show_cart = ref(false)
 const search_stores = ref()
+const cart_quantity = ref()
+
 
 onMounted(async () => {
+  // auth.verifyToken()
+  await auth.validToken() 
   const store_response = await stores.getStores()
   stores_data.value = store_response.stores
-  console.log(stores_data.value)
+  const cartItem = localStorage.getItem('cartItem')
+  const cart = cartItem ? JSON.parse(cartItem) : []
+  cart_quantity.value = cart.length
 })
 
-const toggleCart = () => {
+
+function toggleCart(cart_length: any) {
   show_cart.value = !show_cart.value;
+  console.log('fechando o cart')
+  cart_quantity.value = cart_length
+  console.log(cart_quantity.value)
 }
 
+
 async function submitSearch() {
-  const store_response = await stores.getStoresSearch(search_stores.value)
+  const search = "query=" + search_stores.value
+  const store_response = await stores.getStoresSearch(search)
   stores_data.value = store_response.stores
-  console.log(stores_data.value.length)
 }
 
 async function filterStore(filter: any) {
@@ -46,7 +58,7 @@ async function filterStore(filter: any) {
 </script>
 
 <template>
-  <NavBar @cartClicked="toggleCart"/>
+  <NavBar @cartClicked="toggleCart" :cart_quantity="cart_quantity"/>
   <div class="container">
     <div class="store-title">
       <h3>Lojas!</h3>

@@ -1,9 +1,9 @@
 import { Auth } from "./auth"
 
-const auth = new Auth()
-const current_user = auth.currentUser()
 
-async function getProducts(store_id: any, page: any) {
+async function getProducts(store_id: any, page: any) {  
+  const auth = new Auth()
+  const current_user = auth.currentUser()
   const url = import.meta.env.VITE_BASE_URL + '/stores/' + store_id + '/products?page=' + page
   // const url = 'http://localhost:3000/stores/3/products?page=3'
   const response = await fetch(
@@ -20,7 +20,9 @@ async function getProducts(store_id: any, page: any) {
   return await response.json()
 }
 
-async function getProductsSearch(store_id: any, page: any, query:any) {
+async function getProductsSearch(store_id: any, page: any, query:any) {  
+  const auth = new Auth()
+  const current_user = auth.currentUser()
   const url = import.meta.env.VITE_BASE_URL + '/stores/' + store_id + '/products?page=' + page + '&query=' + query
   // const url = 'http://localhost:3000/stores/3/products?page=3'
   const response = await fetch(
@@ -37,7 +39,9 @@ async function getProductsSearch(store_id: any, page: any, query:any) {
   return await response.json()
 }
 
-async function getProduct(product_id: any) {
+async function getProduct(product_id: any) {  
+  const auth = new Auth()
+  const current_user = auth.currentUser()
   const response = await fetch(
     import.meta.env.VITE_BASE_URL + '/products/' + product_id, {
       method: 'GET',
