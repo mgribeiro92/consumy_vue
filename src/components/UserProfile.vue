@@ -2,6 +2,7 @@
 
 import NavBar from './NavBar.vue';
 import Message from './Message.vue';
+import Chat from './Chat.vue'
 import { Auth } from '@/auth'
 import type { UserType, Address } from '../types'
 import { User } from '../user'
@@ -153,8 +154,7 @@ async function fetchAddress() {
     </div>    
   </div>
 
-  <div class="bola">TESTES</div>
-  
+ 
 </template>
 
 <style scoped>

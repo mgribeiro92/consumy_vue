@@ -6,7 +6,6 @@ import { Auth } from '../auth'
 import { ref, onMounted, onUpdated } from 'vue'
 
 const { cart_quantity }  = defineProps(['cart_quantity'])
-console.log(cart_quantity)
 
 const auth = new Auth()
 const currentUser = ref(auth.currentUser())
@@ -19,10 +18,6 @@ function logOut() {
   router.push('/sign_in')
 }
 
-onUpdated(() => {
-  console.log('update da navbar')
-  console.log(cart_quantity)
-})
 
 const emit = defineEmits(['cartClicked']);
 const handleCartClick = () => {
@@ -38,7 +33,10 @@ const handleCartClick = () => {
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">          
             <RouterLink class="nav-link" to="/">Home</RouterLink>
-          </li>                                 
+          </li>
+          <li class="nav-item">          
+            <RouterLink class="nav-link" to="/chats">Chats</RouterLink>
+          </li>                                  
         </ul>        
         <div class="itens">
           <div class="cart" @click="handleCartClick">

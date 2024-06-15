@@ -5,7 +5,7 @@ import SignUp from '../views/SignUpView.vue'
 import Stores from '../components/Stores.vue'
 import Products from '../components/Products.vue'
 import UserView from '@/views/UserView.vue'
-import Teste from '../views/TesteView.vue'
+import Chats from '../components/Chats.vue'
 import OrdersView from '../views/OrdersView.vue'
 
 const router = createRouter({
@@ -44,9 +44,9 @@ const router = createRouter({
       component: OrdersView,         
     },
     {
-      path: '/teste',
-      name: 'teste',      
-      component: Teste,         
+      path: '/chats',
+      name: 'chats',      
+      component: Chats,         
     },
   ]
 })
