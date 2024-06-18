@@ -42,7 +42,9 @@ onMounted(() => {
 function closeChat() {
   console.log('closechat dos chats')
   show_chat.value = !show_chat.value
+  getChats()
 }
+
 </script>
 
 <template>
@@ -57,6 +59,7 @@ function closeChat() {
       <div class="card-chat">
         <div>Chat #{{ chat.id }}</div>
         <div>Loja: {{ chat.store_name }}</div>
+        <div>Mensagens novas: {{ chat.unread_messages }}</div>
         <div @click="openChat(chat.id)" class="open-chat">Abrir Chat</div>
       </div>
     </div>
@@ -72,7 +75,7 @@ function closeChat() {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     border-radius: 10px;
     padding: 20px;
-    width: 400px;
+    width: 600px;
   }
 
   .open-chat {

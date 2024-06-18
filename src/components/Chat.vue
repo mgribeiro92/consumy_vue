@@ -63,8 +63,10 @@ function getMessageClass(message: { sender_type: string; }) {
 
 function scrollToBottom() {
   setTimeout(() => {
-    const chatContainer = document.querySelector('.chat-container');
-    chatContainer.scrollTop = chatContainer.scrollHeight;
+    const chatContainer = document.querySelector('.chat-container')
+    if (chatContainer) {
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
   }, 100);
 }
 

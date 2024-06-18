@@ -20,6 +20,7 @@ async function lastChat() {
 }
 
 async function createChat(buyer_id: any, store_id: any) {
+  console.log(current_user?.token)
   const body = {
     chat_room: {
       buyer_id: buyer_id,
@@ -38,8 +39,7 @@ async function createChat(buyer_id: any, store_id: any) {
       body: JSON.stringify(body)
     }
   )
-  const chat_data = await response.json()
-  console.log(chat_data)
+  return response.json()
 }
 
 async function getChat(chat_room_id: any) {
