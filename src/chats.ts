@@ -11,16 +11,16 @@ async function lastChat() {
          "Accept": "application/json",
          "Content-Type": "application/json",
          "Authorization": "Bearer" + ' ' + current_user?.token,
-         "X-API-KEY": "8MlfP2mtJVVnICGCJBQ2IeBvSbo="
+         "X-API-KEY": import.meta.env.X_API_KEY
       }
     }
   )
   const chat_data = await response.json()
+  console.log(chat_data)
   return chat_data
 }
 
 async function createChat(buyer_id: any, store_id: any) {
-  console.log(current_user?.token)
   const body = {
     chat_room: {
       buyer_id: buyer_id,
@@ -34,7 +34,7 @@ async function createChat(buyer_id: any, store_id: any) {
          "Accept": "application/json",
          "Content-Type": "application/json",
          "Authorization": "Bearer" + ' ' + current_user?.token,
-         "X-API-KEY": "8MlfP2mtJVVnICGCJBQ2IeBvSbo="
+         "X-API-KEY": import.meta.env.X_API_KEY
       },
       body: JSON.stringify(body)
     }
@@ -50,15 +50,32 @@ async function getChat(chat_room_id: any) {
          "Accept": "application/json",
          "Content-Type": "application/json",
          "Authorization": "Bearer" + ' ' + current_user?.token,
-         "X-API-KEY": "8MlfP2mtJVVnICGCJBQ2IeBvSbo="
+         "X-API-KEY": import.meta.env.X_API_KEY
       },
     }
   )
   return response.json()
 }
 
+async function getChats() {
+  const response = await fetch(
+    import.meta.env.VITE_BASE_URL + '/chat_rooms', {
+      method: "GET",
+      headers: {
+         "Accept": "application/json",
+         "Content-Type": "application/json",
+         "Authorization": "Bearer" + ' ' + current_user?.token,
+         "X-API-KEY": import.meta.env.X_API_KEY
+      }
+    }
+  )
+  return await response.json()
+}
+
+
 export const chats = {
   lastChat,
   getChat,
+  getChats,
   createChat
 }

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+
 import { Auth } from '@/auth'
 import { ref, onMounted, onUpdated } from 'vue'
 import NavBar from '@/components/NavBar.vue';
@@ -21,17 +22,29 @@ const show_cart = ref(false)
 const search_stores = ref()
 const cart_quantity = ref()
 
-
 onMounted(async () => {
-  // auth.verifyToken()
-  await auth.validToken() 
-  const store_response = await stores.getStores()
-  stores_data.value = store_response.stores
+  fetchStores()
   const cartItem = localStorage.getItem('cartItem')
   const cart = cartItem ? JSON.parse(cartItem) : []
-  cart_quantity.value = cart.length
-})
+  cart_quantity.value = cart.length;
+});
 
+
+async function fetchStores() {
+  let store_response = await stores.getStores()
+  console.log("Token Antigo:", localStorage.getItem('token'))
+  console.log(store_response)
+  if (store_response.message) {
+    let new_token_response = await auth.newToken()
+    if (!new_token_response.message) {
+      store_response = await stores.getStores()
+      console.log(store_response)
+      stores_data.value = store_response.stores
+    }
+  } else {
+    stores_data.value = store_response.stores
+  }
+}
 
 function toggleCart(cart_length: any) {
   show_cart.value = !show_cart.value;
@@ -39,7 +52,6 @@ function toggleCart(cart_length: any) {
   cart_quantity.value = cart_length
   console.log(cart_quantity.value)
 }
-
 
 async function submitSearch() {
   const search = "query=" + search_stores.value

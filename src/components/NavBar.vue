@@ -11,7 +11,7 @@ const notification = ref()
 
 consumer.subscriptions.create({ channel: "NotificationChannel", type: "user", id: 25 }, {
   connected() {
-    console.log("Conectado ao NotificationChannel")
+
   },
 
   disconnected() {
@@ -50,7 +50,7 @@ const handleCartClick = () => {
 <template> 
   <nav class="navbar navbar-expand">
     <div class="container-fluid">
-      <a class="navbar-brand">SaborExpress</a>    
+      <a class="navbar-brand">Delivery</a>    
       <div class="collapse navbar-collapse">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">          

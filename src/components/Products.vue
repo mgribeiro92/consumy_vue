@@ -1,5 +1,6 @@
 <script setup lang="ts">
 
+import { Auth } from '@/auth'
 import { ref, onMounted, computed, onUpdated } from 'vue'
 import { useRouter, useRoute } from 'vue-router';
 import { products } from '@/products';
@@ -13,9 +14,9 @@ interface Product {
   title: string,
   price: number,
   image_url: string,
-  id: number;
-  description: Text;
-  inventory: number
+  id: number,
+  description: Text,
+  inventory: number,
 }
 
 interface CartItem {
@@ -28,7 +29,7 @@ interface CartItem {
   store_name: string;
 }
 
-
+const auth = new Auth()
 const product_price = ref()
 const products_data = ref<Product[]>([])
 const store = ref({ id: 0, name: '', created_at: '', updated_at: '', image_url: '', products: [], update_at: '', url: '' });
@@ -47,13 +48,20 @@ const alert = ref('')
 const product_id = ref()
 
 onMounted(async () => {
-  const response = await products.getProducts(store_id, current_page.value)
-  products_data.value = response.result.products
-  total_pages.value = response.result.pagination.pages
-  store.value = await stores.getStore(store_id)
-  const cartItem = localStorage.getItem('cartItem')
-  cart.value = cartItem ? JSON.parse(cartItem) : []
-  cart_quantity.value = cart.value.length
+
+  try {
+    auth.validToken
+  } finally {
+    const response = await products.getProducts(store_id, current_page.value)
+    products_data.value = response.result.products
+    if (response.result.pagination) {
+      total_pages.value = response.result.pagination.pages
+    }
+    store.value = await stores.getStore(store_id)
+    const cartItem = localStorage.getItem('cartItem')
+    cart.value = cartItem ? JSON.parse(cartItem) : []
+    cart_quantity.value = cart.value.length
+  }
 })
 
 onUpdated(() => {
@@ -112,7 +120,7 @@ function showCart() {
         <form class="d-flex" @submit.prevent="submitSearch">
           <input class="form-control" type="search" placeholder="Pesquisar Produtos" v-model="search_products">
           <button class="btn btn-outline-success" type="submit">Pesquisar</button>
-      </form>                
+      </form>                   
     </div>
     <hr>     
     

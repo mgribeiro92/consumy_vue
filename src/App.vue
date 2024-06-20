@@ -11,8 +11,13 @@ const chat_info = ref()
 
 
 async function openChat() {
-  chat_info.value = await chats.lastChat()
-  show_chat.value = !show_chat.value;
+  const chat_data = await chats.getChats()
+  console.log(chat_data.chats)
+  if (chat_data.chats.length > 0) {
+    console.log("ta chamando o utlimo chat")
+    chat_info.value = await chats.lastChat()
+    show_chat.value = !show_chat.value;
+  }
 }
 
 function closeChat() {
@@ -25,7 +30,7 @@ function closeChat() {
 <template>
 
   <!-- <NavBar v-if="$route.meta.showNavBar != false"/> -->
-  <button class="floating-button" @click="openChat">
+  <button v-if="$route.meta.showNavBar != false" class="floating-button" @click="openChat">
     <img src="./assets/chat3.png">
   </button>
 

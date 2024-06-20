@@ -1,11 +1,11 @@
 import { createStorage, type SimpleStorage } from './storage'
 
 class User {
-  private storage: SimpleStorage
+  // private storage: SimpleStorage
 
-  constructor(persistent = false) {
-		this.storage = createStorage(persistent)
-	}
+  // constructor(persistent = false) {
+	// 	this.storage = createStorage(persistent)
+	// }
 
   private getFallback(key: string) : string | null {
 		let transient = createStorage(false)
@@ -18,17 +18,17 @@ class User {
 		return this.getFallback('token')
 	}
 
-  success (response: Response, onSuccess: () => void) {
-    console.log('SUCESSO', response)
-    onSuccess()
-  }
+  // success (response: Response, onSuccess: () => void) {
+  //   console.log('SUCESSO', response)
+  //   onSuccess()
+  // }
   
-  failure(response: Response, onFailure: () => void) {
-    console.log("FRACASSO", response)    
-    onFailure()
-  }
+  // failure(response: Response, onFailure: () => void) {
+  //   console.log("FRACASSO", response)    
+  //   onFailure()
+  // }
 
-  async signUp(email: string, password: string, password_confirmation: string, onSuccess: () => void, onFailure: () => void) {
+  async signUp(email: string, password: string, password_confirmation: string) {
     console.log("will try do sign up")
     const body = {
       user: {
@@ -43,20 +43,21 @@ class User {
       headers: {
         "Accept": "application/json",
         "Content-Type": "application/json",
-        "X-API-KEY": "8MlfP2mtJVVnICGCJBQ2IeBvSbo="
+        "X-API-KEY": "5VdKWFE09B5O8gnjZ5+OuEKanoI="
       },
       body: JSON.stringify(body)
     })
-    .then((response) => {
-      if (response.ok) {
-        this.success(response, onSuccess)
-        const resposta = response.json()
-        console.log(resposta)
-      }
-      else {
-        this.failure(response, onFailure)
-      }
-    })
+    return response.json()
+    // .then((response) => {
+    //   if (response.ok) {
+    //     this.success(response, onSuccess)
+    //     const resposta = response.json()
+    //     console.log(resposta)
+    //   }
+    //   else {
+    //     this.failure(response, onFailure)
+    //   }
+    // })
   }
   
   async userProfile() { 

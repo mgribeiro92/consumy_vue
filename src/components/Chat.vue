@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { ref, onMounted, onUpdated } from 'vue'
+import { ref, onMounted, onUpdated, computed } from 'vue'
 import { Auth } from '@/auth'
 import { User } from '@/user'
 import consumer from '@/websocket/consumer';
@@ -76,12 +76,23 @@ function closedChat() {
   emit('closeChat')
 }
 
+function formatDateTime(dateString: string | number | Date) {
+  const date = new Date(dateString);
+  return date.toLocaleString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  });
+}
+
 </script>
 
 <template>
   <div class="chat-info">
     <div class="chat-title">
-      <div>Chat #{{ chat.id }}</div>
+      <div>Chat</div>
       <div class="store-name">{{ chat.store_name }}</div>
     </div>
     <div class="chat-close" @click="closedChat">Fechar</div>
@@ -89,7 +100,10 @@ function closedChat() {
   <div class="chat-container">    
     <div v-for="message in messages" :class="getMessageClass(message)">
       <div class="message-wrapper">
-        <div class="message-bubble">{{ message.content }}</div>
+        <div class="message-bubble">
+          <div>{{ message.content }}</div>
+          <div style="font-size: 10px;">{{ formatDateTime(message.sent_at)}}</div>
+        </div>
       </div>
      </div>
     <div ref="bottom"></div>    
@@ -116,8 +130,8 @@ function closedChat() {
   
   .chat-container {
     position: relative;
-    max-width: 400px; /* Ajuste conforme necessário */
-    height: 300px; /* Ajuste conforme necessário */
+    max-width: 400px; 
+    height: 300px; 
     overflow-y: auto;
     margin-bottom: 70px;
     margin-top: 100px;
@@ -141,6 +155,7 @@ function closedChat() {
     display: flex;
     justify-content: flex-end; 
     padding: 5px;
+    text-align: right;
   }
 
   .message-bubble {
@@ -150,15 +165,17 @@ function closedChat() {
   }
 
   .message-left .message-wrapper {
-    justify-content: flex-start; 
+    justify-content: flex-start;
+    text-align: left;
   }
 
   .message-right .message-bubble {
-    background-color:	aqua
+    background-color:	#5e6b72;
+    color: white;
   }
 
   .message-left .message-bubble {
-    background-color: greenyellow
+    background-color: #F1F0F0;
   }
 
   .input-wrapper {

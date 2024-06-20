@@ -13,6 +13,8 @@ export interface Address {
   state: string
 }
 
-// export interface newMessage {
-
-// }
+export interface ChatRoom {
+  id: number, 
+  store_name: string, 
+  unread_messages: number, 
+}

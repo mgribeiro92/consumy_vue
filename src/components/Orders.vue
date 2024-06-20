@@ -54,6 +54,7 @@ async function allOrders() {
     connectionOrder()
   } else {
     orders_data.value = await orders.getOrders()
+    console.log(orders_data.value)
   }
 }
 

@@ -5,29 +5,14 @@ import Chat from './Chat.vue'
 import { Auth } from '@/auth'
 import { ref, onMounted } from 'vue';
 import { chats } from '@/chats'
+import type { ChatRoom } from '@/types'
 
 const auth = new Auth()
 const current_user = auth.currentUser()
-const all_chats = ref([])
+const all_chats = ref<ChatRoom[]>([])
 const show_chat = ref()
 const chat_info = ref()
 
-async function getChats() {
-  const response = await fetch(
-    import.meta.env.VITE_BASE_URL + '/chat_rooms', {
-      method: "GET",
-      headers: {
-         "Accept": "application/json",
-         "Content-Type": "application/json",
-         "Authorization": "Bearer" + ' ' + current_user?.token,
-         "X-API-KEY": "8MlfP2mtJVVnICGCJBQ2IeBvSbo="
-      }
-    }
-  )
-  const chat_data = await response.json()
-  all_chats.value = chat_data.chats
-  console.log(chat_data)
-}
 
 async function openChat(chat_room_id: any) {
   chat_info.value = await chats.getChat(chat_room_id)
@@ -35,14 +20,19 @@ async function openChat(chat_room_id: any) {
   show_chat.value = !show_chat.value
 }
 
-onMounted(() => {
-  getChats()
+
+onMounted(async() => {
+  const chat_data = await chats.getChats()
+  if (chat_data.chats.length > 0) {
+    all_chats.value = chat_data.chats
+  }
 })
 
-function closeChat() {
+async function closeChat() {
   console.log('closechat dos chats')
   show_chat.value = !show_chat.value
-  getChats()
+  const chat_data = await chats.getChats()
+  all_chats.value = chat_data.chats
 }
 
 </script>

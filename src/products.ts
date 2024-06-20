@@ -12,7 +12,7 @@ async function getProducts(store_id: any, page: any) {
       headers: {
         "Accept": "application/json",
         "Content-Type": "application/json",
-        "X-API-KEY": "8MlfP2mtJVVnICGCJBQ2IeBvSbo=",
+        "X-API-KEY": "5VdKWFE09B5O8gnjZ5+OuEKanoI=",
         "Authorization": "Bearer" + ' ' + current_user?.token
       },
     }
