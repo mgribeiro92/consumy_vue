@@ -9,7 +9,7 @@ async function getStores() {
       headers: {
 				"Accept": "application/json",
 				"Content-Type": "application/json",
-				"X-API-KEY": "8MlfP2mtJVVnICGCJBQ2IeBvSbo=",
+				"X-API-KEY": import.meta.env.X_API_KEY,
         "Authorization": "Bearer" + ' ' + current_user?.token
 			},
     }
@@ -26,7 +26,7 @@ async function getStoresSearch(search: string) {
       headers: {
 				"Accept": "application/json",
 				"Content-Type": "application/json",
-				"X-API-KEY": "8MlfP2mtJVVnICGCJBQ2IeBvSbo=",
+				"X-API-KEY": import.meta.env.X_API_KEY,
         "Authorization": "Bearer" + ' ' + current_user?.token
 			},
     }
@@ -43,7 +43,7 @@ async function getStore(store_id: any) {
       headers: {
 				"Accept": "application/json",
 				"Content-Type": "application/json",
-				"X-API-KEY": "8MlfP2mtJVVnICGCJBQ2IeBvSbo=",
+				"X-API-KEY": import.meta.env.X_API_KEY,
         "Authorization": "Bearer" + ' ' + current_user?.token
 			},
     }

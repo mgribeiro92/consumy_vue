@@ -4,7 +4,9 @@ import { Auth } from "@/auth"
 import NavBar from './NavBar.vue'
 import Cart from './Cart.vue'
 import Message from "./Message.vue"
+import Chat from "./Chat.vue"
 import { orders } from '../orders'
+import { chats } from '../chats'
 import { onMounted, ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { fetchEventSource } from "@microsoft/fetch-event-source";
@@ -28,6 +30,8 @@ const order_id = ref()
 const msg = ref()
 const alert = ref()
 const cart_quantity = ref()
+const chat_info = ref()
+const show_chat = ref(false)
 
 const router = useRouter()
 const route = useRoute()
@@ -50,9 +54,9 @@ async function allOrders() {
     connectionOrder()
   } else {
     orders_data.value = await orders.getOrders()
+    console.log(orders_data.value)
   }
 }
-
 
 function toggleCart(cart_length: any) {
   show_cart.value = !show_cart.value;
@@ -82,6 +86,17 @@ async function orderAgain(order_id: any) {
   show_cart.value = !show_cart.value
 }
 
+async function openChat(buyer_id: any, store_id: any) {
+  console.log(buyer_id, store_id)
+  console.log("abrir o chat")
+  chat_info.value = await chats.createChat(buyer_id, store_id)
+  show_chat.value = !show_chat.value
+}
+
+function closeChat() {
+  console.log('closechat dos chats')
+  show_chat.value = !show_chat.value
+}
 
 const getStatusClass = (state: string) => {
   return {
@@ -146,7 +161,8 @@ function connectionOrder() {
             <div v-for="order_item in order.order_items">
               <p>{{ order_item.amount }}x {{ order_item.product.title }} - R$ {{ order_item.price }}</p>
             </div>
-            <span @click="orderAgain(order.id)" class="order-again"><img src="../assets/repetir (1).png">   Bora pedir novo?</span>
+            <div @click="orderAgain(order.id)" class="order-again"><img src="../assets/repetir (1).png">   Bora pedir novo?</div>
+            <div @click="openChat(order.buyer_id, order.store_id)" class="order-again"><img src="../assets/chat2.png">   Mandar mensagem para a loja!</div>
           </div>
           <div class="order-state">            
             <h6 id="created" v-if="order.state == 'payment_success' ">Pagamento finalizado, aguardando pedido ser aceito</h6>
@@ -164,6 +180,9 @@ function connectionOrder() {
   </div>
 
   <Cart v-if="show_cart" @cartClosed="toggleCart" />
+  <div v-if="show_chat" class="chat-wrapper">
+    <Chat :chat_info="chat_info" @closeChat="closeChat"/>
+  </div>
 
 </template>
 
@@ -199,6 +218,7 @@ function connectionOrder() {
 
   .order-again{
     color: #808080;
+    margin-bottom: 10px;
   }
 
   .order-again:hover {

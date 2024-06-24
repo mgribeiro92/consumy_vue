@@ -12,3 +12,9 @@ export interface Address {
   country: string
   state: string
 }
+
+export interface ChatRoom {
+  id: number, 
+  store_name: string, 
+  unread_messages: number, 
+}

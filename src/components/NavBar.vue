@@ -4,14 +4,35 @@ import router from '@/router';
 import eventBus from '@/event';
 import { Auth } from '../auth'
 import { ref, onMounted, onUpdated } from 'vue'
+import consumer from "../websocket/consumer"
 
 const { cart_quantity }  = defineProps(['cart_quantity'])
-console.log(cart_quantity)
+const notification = ref()
+
+consumer.subscriptions.create({ channel: "NotificationChannel", type: "user", id: 25 }, {
+  connected() {
+
+  },
+
+  disconnected() {
+    console.log("Desconectado ao NotificationChannel")
+  },
+
+  received(data: any) {
+    console.log('ta chegando no received')
+    notification.value = data.notification
+    console.log(notification.value)
+  },
+})
 
 const auth = new Auth()
 const currentUser = ref(auth.currentUser())
 
 const show_cart = ref(false)
+
+// onMounted(() => {
+//   console.log('montagem da navbar')
+// })
 
 function logOut() {
   console.log('logout chamado')
@@ -19,10 +40,6 @@ function logOut() {
   router.push('/sign_in')
 }
 
-onUpdated(() => {
-  console.log('update da navbar')
-  console.log(cart_quantity)
-})
 
 const emit = defineEmits(['cartClicked']);
 const handleCartClick = () => {
@@ -33,14 +50,18 @@ const handleCartClick = () => {
 <template> 
   <nav class="navbar navbar-expand">
     <div class="container-fluid">
-      <a class="navbar-brand">SaborExpress</a>    
+      <a class="navbar-brand">Delivery</a>    
       <div class="collapse navbar-collapse">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">          
             <RouterLink class="nav-link" to="/">Home</RouterLink>
-          </li>                                 
+          </li>
+          <li class="nav-item">          
+            <RouterLink class="nav-link" to="/chats">Chats</RouterLink>
+          </li>                                  
         </ul>        
-        <div class="itens">
+        <div class="itens">          
+          <RouterLink class="nav-link" to="/chats">{{ notification }}</RouterLink>
           <div class="cart" @click="handleCartClick">
             <div v-show="cart_quantity" class="bola">{{cart_quantity}}</div>
             <img src="../assets/shopping-bag.png" alt="cart">
@@ -86,7 +107,7 @@ const handleCartClick = () => {
     height: 40px;
   }
 
-  .bola{
+  .bola {
     background-color: #8b0000;
     width: 20px;
     height: 20px;
@@ -98,9 +119,10 @@ const handleCartClick = () => {
     margin-right: 5px;
   }
 
-  .cart{
+  .cart {
     display: flex;
     cursor: pointer;
+    margin-left: 30px;
   }
 
   .nav-link {

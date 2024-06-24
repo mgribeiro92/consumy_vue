@@ -18,7 +18,7 @@ async function createOrder(store: any, order_items: any) {
         "Accept": "application/json",
         "Content-Type": "application/json",
         "Authorization": "Bearer" + ' ' + current_user?.token,
-        "X-API-KEY": "8MlfP2mtJVVnICGCJBQ2IeBvSbo="
+        "X-API-KEY": "5VdKWFE09B5O8gnjZ5+OuEKanoI="
       },
       body: JSON.stringify(body_order)
     }
@@ -37,7 +37,7 @@ async function getOrders() {
         "Accept": "application/json",
         "Content-Type": "application/json",
         "Authorization": "Bearer" + ' ' + current_user?.token,
-        "X-API-KEY": "8MlfP2mtJVVnICGCJBQ2IeBvSbo="
+        "X-API-KEY": "5VdKWFE09B5O8gnjZ5+OuEKanoI="
       },
     }
   )
@@ -54,7 +54,7 @@ async function getOrder(order_id: any) {
         "Accept": "application/json",
         "Content-Type": "application/json",
         "Authorization": "Bearer" + ' ' + current_user?.token,
-        "X-API-KEY": "8MlfP2mtJVVnICGCJBQ2IeBvSbo="
+        "X-API-KEY": "5VdKWFE09B5O8gnjZ5+OuEKanoI="
       },
     }
   )

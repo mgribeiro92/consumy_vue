@@ -74,12 +74,11 @@ async function newOrder(credit_card: JSON) {
   const order_items = cart.value.map(item => ({ product_id: item.product_id, amount: item.amount }))
   console.log(order_items)
   const response_new_order = await orders.createOrder(store, order_items)
-  console.log(response_new_order.error[0])
+  console.log(response_new_order)
   if (response_new_order.error[0]) {
     msg.value = response_new_order.error[0]
     alert.value = "error"
   } else {
-
     order_in_progress.value = true
   }
   // orders.sendPayment(credit_card, response_new_order)

@@ -19,12 +19,9 @@ const msg = ref('')
 const alert = ref('')
 
 onMounted(() => {
-	console.log('mounted sign in')	
 	event.on("sign_in", (dados: any) => {
-		console.log(dados)
 		msg.value = dados.msg
 		alert.value = dados.alert
-		console.log('log dos dados recebidos')
 	})
 })
 
@@ -52,8 +49,8 @@ function onSubmit() {
 			<Message v-show="msg" :message="msg" :alert="alert"/>
 		</div>		
 		<div class="login">
-			<h2>Welcome to Delivery!</h2>
-			<p>Hello there! We're glad to have you here. Get ready for a delightful experience as we dive into our menu!</p>			   		   
+			<h2>Bem vindo ao Delivery!</h2>
+			<p>Olá! Estamos felizes em ter você aqui. Prepare-se para uma experiência deliciosa enquanto mergulhamos em nosso menu!</p>			   		   
 			<form class="form-login" @submit.prevent="onSubmit">       
 				<h3>Login</h3>                                
 				<div class="form-outline mb-2">                  

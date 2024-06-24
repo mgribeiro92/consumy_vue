@@ -2,6 +2,7 @@
 
 import NavBar from './NavBar.vue';
 import Message from './Message.vue';
+import Chat from './Chat.vue'
 import { Auth } from '@/auth'
 import type { UserType, Address } from '../types'
 import { User } from '../user'
@@ -13,7 +14,7 @@ const router = useRouter()
 const user = new User()
 const user_profile = ref<UserType>({} as UserType)
 const user_id = ref()
-const address = ref<Address>({} as Address);
+const address = ref<Address>();
 const update_user = ref(false)
 const email = defineModel<string>('email')
 const password = defineModel<string>('password')
@@ -28,31 +29,36 @@ const update_address = ref(false)
 onMounted(async () => {
   auth.verifyToken()
   auth.validToken()  
+  getUser()
+})
+
+async function getUser() {
   const user_info = await user.userProfile()
   user_profile.value = user_info
   user_id.value = user_info.id
   if (user_info.address) {
     address.value = user_info.address
-    address_city.value = address.value.city
-    address_street.value = address.value.street
-    address_state.value = address.value.state
-    address_number.value = address.value.number
-    cep.value = address.value.zip_code
+    address_city.value = address.value?.city
+    address_street.value = address.value?.street
+    address_state.value = address.value?.state
+    address_number.value = address.value?.number
+    cep.value = address.value?.zip_code
   }
-
-})
+}
 
 function onUpdate(){
   user.userUpdate(email.value || '', user_profile.value.id)
 }
 
 function changeAddress() {
-  address_id.value = address.value.id
+  address_id.value = address.value?.id
   if (!address.value) {
     console.log(address_id.value)
     user.newAddress(user_id.value, address_street.value, address_number.value, cep.value, address_city.value, address_state.value)
+    getUser()
   } else {
     user.updateAddress(address_id.value, address_street.value, address_number.value, cep.value, address_city.value, address_state.value)
+    getUser()
   }
   update_address.value = false
 }
@@ -101,10 +107,10 @@ async function fetchAddress() {
       <div>{{ user_profile.email }}</div>
       <button class="btn btn-outline-primary" @click="update_user = true">Editar Email</button>   
       <div class="user-title">Endereço:</div>
-      <div><span class="user-subtitle">Rua: </span>{{ address.street }}, {{ address.number }}</div>
-      <div><span class="user-subtitle">Cidade: </span>{{ address.city }} - {{ address.state }}</div>
-      <div><span class="user-subtitle">CEP: </span>{{ address.zip_code }}</div>
-      <div><span class="user-subtitle">Pais: </span>{{ address.country }}</div>
+      <div><span class="user-subtitle">Rua: </span>{{ address?.street }}, {{ address?.number }}</div>
+      <div><span class="user-subtitle">Cidade: </span>{{ address?.city }} - {{ address?.state }}</div>
+      <div><span class="user-subtitle">CEP: </span>{{ address?.zip_code }}</div>
+      <div><span class="user-subtitle">Pais: </span>{{ address?.country }}</div>
       <button class="btn btn-outline-primary" @click="update_address = true">Editar Endereço</button>
       <button class="btn btn-outline-danger" @click="deleteUser">Excluir Conta</button> 
     </div>
@@ -153,8 +159,7 @@ async function fetchAddress() {
     </div>    
   </div>
 
-  <div class="bola">TESTES</div>
-  
+ 
 </template>
 
 <style scoped>

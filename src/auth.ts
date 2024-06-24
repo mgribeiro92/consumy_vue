@@ -70,7 +70,7 @@ class Auth {
 			headers: {
 				"Accept": "application/json",
 				"Content-Type": "application/json",
-				"X-API-KEY": "8MlfP2mtJVVnICGCJBQ2IeBvSbo="
+        "X-API-KEY": "5VdKWFE09B5O8gnjZ5+OuEKanoI="
 			},
 			body: JSON.stringify(body)
 		})	
@@ -88,8 +88,9 @@ class Auth {
 		const body = {
 			refresh_token: this.getFallback('refresh_token')
 		}
+		const url = import.meta.env.VITE_BASE_URL + '/new_token'
 		const response = await fetch (
-			import.meta.env.VITE_BASE_URL + '/new_token', {
+			url, {
 				method: 'POST',
 				headers: {
 					"Accept": "application/json",
@@ -97,7 +98,23 @@ class Auth {
 				},
 				body: JSON.stringify(body)
 			})
-		return await response.json()		
+		console.log(body)
+		const new_token_response = await response.json()
+		console.log(new_token_response)
+		if (new_token_response.token) {
+			this.replaceToken(new_token_response.token)
+			// window.location.reload()
+		} else {
+			setTimeout(() => {
+			event.emit("sign_in", { 
+				msg: 'Sessão expirada!',					
+				alert: 'warning' 
+				})
+			}, 1000)
+			this.signOut()
+			router.push('/sign_in')
+		}
+		return new_token_response
 	}
 
 	verifyToken() {
@@ -111,7 +128,7 @@ class Auth {
 		if (localStorage.getItem('token')) {
 			localStorage.setItem('token', token)
 		} else {
-			sessionStorage.setItem('token',token)
+			sessionStorage.setItem('token', token)
 		}		
 	}
 
@@ -126,13 +143,13 @@ class Auth {
 			},           
 		})
     const data = await response.json()
+		console.log(data)
 		if(data.message == "Invalid token!") {
-			console.log('ta passando para pegar um novo refresh token')
       const newTokenResponse = await this.newToken()
 			console.log(newTokenResponse)   
       if (newTokenResponse.token) {
         this.replaceToken(newTokenResponse.token)
-        window.location.reload()
+        // window.location.reload()
       } else {
         setTimeout(() => {
 				event.emit("token_invalid", { 
@@ -144,6 +161,31 @@ class Auth {
         router.push('/sign_in')
 		  }
     }
+	}
+
+	async newAddress(user_id: any, street: any, number: any, cep: any, city: any, state: any) {
+		const body = {
+			address: {
+				user_id: user_id,
+				street: street,
+				number: number,
+				zip_code: cep,
+				city: city,
+				state: state,
+				country: "Brazil"
+			}
+		}
+		const response = await fetch(
+			import.meta.env.VITE_BASE_URL + '/addresses', {
+				method: 'POST',
+				headers: {
+					"Accept": "application/json",
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(body)          
+			} 
+		)
+		return await response.json()
 	}
 }
 
